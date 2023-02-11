@@ -33,7 +33,7 @@ void tvmgen_default_cutlass_main_0_(DLTensor* cutlass_0_i0, DLTensor* cutlass_0_
   using ElementComputeEpilogue = cutlass::half_t;
   
   // Gemm operator cutlass_tensorop_h1688gemm_256x128_32x2_tn_align8
-  using Operation_cutlass_tensorop_h1688gemm_256x128_32x2_tn_align8 = cutlass::gemm::device::GemmBatched<
+  using Operation_cutlass_tensorop_h1688gemm_256x128_32x2_tn_align8 = cutlass::gemm::device::Gemm<
     cutlass::half_t, cutlass::layout::RowMajor,
     cutlass::half_t, cutlass::layout::ColumnMajor,
     cutlass::half_t, cutlass::layout::RowMajor,
@@ -50,14 +50,14 @@ void tvmgen_default_cutlass_main_0_(DLTensor* cutlass_0_i0, DLTensor* cutlass_0_
       cutlass::half_t,
       cutlass::half_t
     >,
-    cutlass::gemm::threadblock::GemmBatchedIdentityThreadblockSwizzle,
+    cutlass::gemm::threadblock::GemmIdentityThreadblockSwizzle<8>,
     2,
     8,
     8,
-    
+    false,
     cutlass::arch::OpMultiplyAdd
   >;
-  using BatchedGemm = Operation_cutlass_tensorop_h1688gemm_256x128_32x2_tn_align8;
+  using Gemm = Operation_cutlass_tensorop_h1688gemm_256x128_32x2_tn_align8;
   int M = 96;
   int N = 64;
   int K = 64;
@@ -67,21 +67,17 @@ void tvmgen_default_cutlass_main_0_(DLTensor* cutlass_0_i0, DLTensor* cutlass_0_
   void* ptr_a = (void*)(cutlass_0_i0->data);
   void* ptr_b = (void*)(cutlass_0_i1->data);
   void* ptr_out = (void*)(out0->data);
-  typename BatchedGemm::Arguments arguments{
+  typename Gemm::Arguments arguments{
    problem_size,
    {static_cast<ElementInputA*>(ptr_a), K},
-  6144,
    {static_cast<ElementInputB*>(ptr_b), K},
-  4096,
    {static_cast<ElementOutput*>(ptr_out), N},
-  6144,
    {static_cast<ElementOutput*>(ptr_out), N},
-  6144,
    {alpha, beta},
-  8};
-  size_t workspace_size = BatchedGemm::get_workspace_size(arguments);
+   1};
+  size_t workspace_size = Gemm::get_workspace_size(arguments);
   cutlass::device_memory::allocation<uint8_t> workspace(workspace_size);
-  BatchedGemm gemm_op;
+  Gemm gemm_op;
   cutlass::Status status = gemm_op.can_implement(arguments);
   CHECK(status == cutlass::Status::kSuccess);
   status = gemm_op.initialize(arguments, workspace.get());

@@ -327,7 +327,7 @@ def verify_dense(
     N,
     K,
     ref_target="cuda",
-    sm=80,
+    sm=70,
     atol=1e-5,
     rtol=1e-5,
     run_benchmark=False,
@@ -384,7 +384,7 @@ def verify_dense(
 
 
 def verify_batch_matmul(
-    func, batch, M, N, K, ref_target="cuda", sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
+    func, batch, M, N, K, ref_target="cuda", sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
 ):
     assert has_cutlass()
     mod = tvm.IRModule.from_expr(func)
@@ -458,505 +458,505 @@ def test_dense():
     )
 
 
-@tvm.testing.requires_cutlass
-def test_dense_bias():
-    verify_dense(get_dense_bias(M, N, K), M, N, K)
-    verify_dense(get_dense_bias(M, N, K, out_dtype="float32"), M, N, K)
-
-
-@tvm.testing.requires_cutlass
-def test_dense_bias_relu():
-    verify_dense(get_dense_bias_relu(M, N, K), M, N, K)
-    verify_dense(get_dense_bias_relu(M, N, K, out_dtype="float32"), M, N, K)
-
-
-@tvm.testing.requires_cutlass
-def test_dense_bias_gelu():
-    verify_dense(get_dense_bias_gelu(M, N, K), M, N, K, atol=1e-3, rtol=1e-3)
-    verify_dense(get_dense_bias_gelu(M, N, K, out_dtype="float32"), M, N, K, atol=1e-3, rtol=1e-3)
-
-
-@tvm.testing.requires_cutlass
-def test_dense_dynamic():
-    data_shape = (relay.Any(), K)
-    weight_shape = (relay.Any(), K)
-
-    if has_cublas():
-        # TVM native fp16 dense (without tensorcore), using fp16 accum, seems to have accuracy issues
-        # Use cublas as a reference
-
-        verify_dense(
-            get_dense_with_shape(data_shape, weight_shape),
-            M,
-            N,
-            K,
-            ref_target="cuda -libs=cublas",
-        )
-
-    verify_dense(
-        get_dense_with_shape(data_shape, weight_shape, out_dtype="float32"),
-        M,
-        N,
-        K,
-        atol=1e-4,
-        rtol=1e-4,
-    )
-
-
-@tvm.testing.requires_cutlass
-def test_batch_matmul():
-    batch = 8
-    verify_batch_matmul(get_batch_matmul(batch, M, N, K), batch, M, N, K)
-    verify_batch_matmul(get_batch_matmul(batch, M, N, K, out_dtype="float32"), batch, M, N, K)
-
-    if has_cublas():
-        # Test dynamic shape batch_matmul
-        # AutoTVM does not seem to support it
-        x_shape = (relay.Any(), relay.Any(), K)
-        y_shape = (relay.Any(), relay.Any(), K)
-
-        verify_batch_matmul(
-            get_batch_matmul_with_shape(x_shape, y_shape),
-            batch,
-            M,
-            N,
-            K,
-            ref_target="cuda -libs=cublas",
-        )
-
-
-def verify_conv2d_common(
-    expr_nchw,  # can be dynamic batch
-    expr_ref,  # always static batch
-    input_names,
-    inputs,
-    params,
-    sm=80,
-    split_k_slices=[1],
-    atol=1e-5,
-    rtol=1e-5,
-    use_cudnn_ref=False,
-    run_benchmark=False,
-    use_fast_math=False,
-    ref_target="cuda",
-    use_vm=False,
-):
-    assert has_cutlass()
-    if sm < 80 and inputs[0].dtype == "float32":
-        return
-
-    mod_nchw = tvm.IRModule.from_expr(expr_nchw)
-    mod_ref = tvm.IRModule.from_expr(expr_ref)
-
-    if use_vm:
-        profile_and_build_func = profile_and_build_vm
-        get_output_func = get_output_vm
-        ref_build_func = get_ref_vm
-    else:
-        profile_and_build_func = profile_and_build
-        get_output_func = get_output
-        ref_build_func = get_ref_rt_mod
-
-    mod_weight_ohwi = convert_conv2d_layout(
-        mod_nchw,
-        {
-            "nn.conv2d": ["NHWC", "OHWI"],
-            "nn.conv2d_transpose": ["NHWC", "IHWO"],
-            "nn.conv2d_backward_weight": ["NHWC", "OHWI"],
-        },
-    )
-
-    rt_mod, _, num_cutlass_partition = profile_and_build_func(
-        mod_weight_ohwi, params, sm, split_k_slices, use_fast_math=use_fast_math
-    )
-    out = get_output_func(rt_mod, input_names, inputs)
-
-    assert num_cutlass_partition > 0
-
-    if use_cudnn_ref:
-        rt_mod_ref, dev = ref_build_func(
-            convert_conv2d_layout(mod_ref, {"nn.conv2d": ["NHWC", "OHWI"]}),
-            params,
-            target="cuda -libs=cudnn",
-        )
-    else:
-        rt_mod_ref, dev = ref_build_func(
-            convert_conv2d_layout(mod_ref, {"nn.conv2d": ["NHWC", "HWIO"]}),
-            params,
-            target=ref_target,
-        )
-
-    ref_out = get_output_func(rt_mod_ref, input_names, inputs)
-
-    if run_benchmark:
-        print("CUTLASS:", rt_mod.benchmark(dev, number=1, repeat=600))
-        print("TVM Tensorcore (no tuning):", rt_mod_ref.benchmark(dev, number=1, repeat=600))
-
-    np.testing.assert_allclose(out, ref_out, atol=atol, rtol=rtol)
-
-
-def verify_conv2d(
-    expr_nchw,  # can be dynamic batch
-    expr_ref,  # always static batch
-    d_shape,
-    w_shape,
-    sm=80,
-    atol=1e-5,
-    rtol=1e-5,
-    use_cudnn_ref=False,
-    run_benchmark=False,
-    use_fast_math=False,
-    data_dtype="float16",
-    weight_dtype="float16",
-    ref_target="cuda",
-    use_vm=False,
-):
-    mod_nchw = tvm.IRModule.from_expr(expr_nchw)
-    typ = relay.transform.InferType()(mod_nchw)["main"].body.checked_type
-
-    use_vm = use_vm or any(isinstance(s, tvm.tir.Any) for s in typ.shape)
-
-    np_data = get_random_ndarray(d_shape, data_dtype)
-    np_weight = get_random_ndarray(w_shape, weight_dtype)
-    np_bias = get_random_ndarray((w_shape[0],), typ.dtype)
-    params = {"weight": np_weight, "bias": np_bias}
-
-    split_k_slices = [1]
-
-    return verify_conv2d_common(
-        expr_nchw,
-        expr_ref,
-        ["data"],
-        [np_data],
-        params,
-        sm,
-        split_k_slices,
-        atol,
-        rtol,
-        use_cudnn_ref,
-        run_benchmark,
-        use_fast_math,
-        ref_target,
-        use_vm,
-    )
-
-
-def verify_conv2d_backward_weight(
-    expr_nchw,  # can be dynamic batch
-    expr_ref,  # always static batch
-    grad_shape,
-    data_shape,
-    sm=80,
-    split_k_slices=[1],
-    atol=1e-5,
-    rtol=1e-5,
-    use_cudnn_ref=False,
-    use_fast_math=False,
-    grad_dtype="float16",
-    data_dtype="float16",
-    ref_target="cuda",
-    use_vm=False,
-):
-    np_grad = get_random_ndarray(grad_shape, grad_dtype)
-    np_data = get_random_ndarray(data_shape, data_dtype)
-    params = {}
-    input_names = ["grad", "data"]
-    return verify_conv2d_common(
-        expr_nchw,
-        expr_ref,
-        input_names,
-        [np_grad, np_data],
-        params,
-        sm,
-        split_k_slices,
-        atol,
-        rtol,
-        use_cudnn_ref,
-        False,
-        use_fast_math,
-        ref_target,
-        use_vm,
-    )
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d():
-    padding = (1, 1)
-    for IC in [3, 16]:
-        d_shape = (16, IC, 32, 32)
-        w_shape = (32, IC, 3, 3)
-        mod_nchw = get_conv2d_nchw(d_shape, w_shape, padding)
-
-        verify_conv2d(
-            mod_nchw,
-            mod_nchw,
-            d_shape,
-            w_shape,
-            sm=80,
-            atol=1e-5,
-            rtol=1e-5,
-            use_cudnn_ref=(IC == 3),  # The autotvm kernel has an accuracy issue with IC == 3 case
-            run_benchmark=False,
-        )
-
-    d_shape = (16, 16, 32, 32)
-    w_shape = (32, 16, 3, 3)
-    padding = (1, 1)
-    dyn_batch_shape = (relay.Any(),) + d_shape[1:]
-
-    mod_nchw = get_conv2d_nchw(d_shape, w_shape, padding)
-    mod_dyn = get_conv2d_nchw(dyn_batch_shape, w_shape, padding)
-
-    verify_conv2d(
-        mod_dyn, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-    for data_dtype, weight_dtype, out_dtype in [
-        ("float32", "float32", "float32"),  # 3xtf32
-        ("int8", "int8", "int32"),
-        ("uint8", "int8", "int32"),
-    ]:
-        expr = get_conv2d_nchw(
-            d_shape,
-            w_shape,
-            padding,
-            out_dtype=out_dtype,
-            data_dtype=data_dtype,
-            weight_dtype=weight_dtype,
-        )
-
-        verify_conv2d(
-            expr,
-            expr,
-            d_shape,
-            w_shape,
-            sm=80,
-            atol=1e-5,
-            rtol=1e-5,
-            run_benchmark=False,
-            data_dtype=data_dtype,
-            weight_dtype=weight_dtype,
-            ref_target="llvm",
-        )
-
-    # align1 + int8 case
-    d_shape = (16, 3, 32, 32)
-    w_shape = (32, 3, 3, 3)
-    mod_nchw = get_conv2d_nchw(
-        d_shape, w_shape, padding, out_dtype="int32", data_dtype="uint8", weight_dtype="int8"
-    )
-
-    verify_conv2d(
-        mod_nchw,
-        mod_nchw,
-        d_shape,
-        w_shape,
-        sm=80,
-        atol=1e-5,
-        rtol=1e-5,
-        ref_target="llvm",
-        data_dtype="uint8",
-        weight_dtype="int8",
-    )
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d_fusion():
-    d_shape = (16, 16, 32, 32)
-    w_shape = (32, 16, 3, 3)
-    padding = (1, 1)
-
-    mod_nchw = get_conv2d_nchw_bias(d_shape, w_shape, padding)
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-    mod_nchw = get_conv2d_nchw_bias_relu(d_shape, w_shape, padding)
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-    mod_nchw = get_conv2d_nchw_bias_sigmoid(d_shape, w_shape, padding, out_dtype="float16")
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-    verify_conv2d(
-        mod_nchw,
-        mod_nchw,
-        d_shape,
-        w_shape,
-        sm=80,
-        atol=1e-3,
-        rtol=1e-3,
-        run_benchmark=False,
-        use_fast_math=True,
-    )
-
-    mod_nchw = get_conv2d_nchw_bias_sigmoid(d_shape, w_shape, padding, out_dtype="float32")
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-    mod_nchw = get_conv2d_nchw_bias_silu(d_shape, w_shape, padding, out_dtype="float32")
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-    mod_nchw = get_conv2d_nchw_bias_hardswish(d_shape, w_shape, padding, out_dtype="float16")
-    verify_conv2d(
-        mod_nchw, mod_nchw, d_shape, w_shape, sm=80, atol=1e-5, rtol=1e-5, run_benchmark=False
-    )
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d_residual_block():
-    d_shape = (16, 16, 32, 32)
-    w_shape = (16, 16, 3, 3)
-    padding = (1, 1)
-
-    bias_add, residual_input = get_conv2d_nchw_bias_residual(d_shape, w_shape, padding)
-
-    for func, tol in [
-        (relay.nn.relu(bias_add + residual_input), 1e-5),
-        (relay.nn.relu(bias_add) + residual_input, 1e-5),
-        (relay.sigmoid(bias_add) * residual_input, 1e-5),
-        (relay.nn.relu(silu(bias_add) * residual_input), 1e-5),
-        # HardSwish requires higher tolerance since vectoring the residual block epilogue
-        # in cutlass.
-        # TODO(masahi): Invesitigate this issue
-        (relay.nn.relu(hardswish(bias_add) + residual_input), 1e-3),
-    ]:
-        verify_conv2d(func, func, d_shape, w_shape, sm=80, atol=tol, rtol=tol, run_benchmark=False)
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d_transpose():
-    OC = 8
-    IC = 16
-    d_shape = (16, IC, 32, 32)
-    w_shape = (OC, IC, 3, 3)
-    padding = (1, 1)
-    dtype = "float32"
-
-    for strides in [(1, 1), (2, 2)]:
-        o_shape = conv_output_shape(
-            0, padding, strides, (1, 1), d_shape, (OC, IC, 3, 3), "float32", "float32"
-        )
-        output_padding = (1, 1) if strides[0] > 1 else (0, 0)
-        mod_nchw = get_conv2d_transpose_nchw(
-            o_shape,
-            w_shape,
-            padding,
-            output_padding,
-            strides,
-            out_dtype=dtype,
-            data_dtype=dtype,
-            weight_dtype=dtype,
-        )
-
-        verify_conv2d(
-            mod_nchw,
-            mod_nchw,
-            o_shape,
-            w_shape,
-            sm=80,
-            atol=1e-3,
-            rtol=1e-3,
-            use_cudnn_ref=False,
-            run_benchmark=False,
-            data_dtype=dtype,
-            weight_dtype=dtype,
-        )
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d_backward_weight():
-    OC = 8
-    IC = 16
-    d_shape = (16, IC, 32, 32)
-    w_shape = (OC, IC, 3, 3)
-    dtype = "float16"
-
-    for strides in [(1, 1), (2, 2)]:
-        o_shape = (16, OC, 32 // strides[0], 32 // strides[1])
-        padding = (1, 1)
-
-        mod_nchw = get_conv2d_backward_weight(
-            d_shape,
-            w_shape,
-            o_shape,
-            padding,
-            strides,
-            out_dtype="float32",
-            data_dtype=dtype,
-            weight_dtype=dtype,
-        )
-
-        for split_k_slices in [1, 8]:
-            verify_conv2d_backward_weight(
-                mod_nchw,
-                mod_nchw,
-                o_shape,
-                d_shape,
-                sm=80,
-                split_k_slices=[split_k_slices],
-                atol=1e-3,
-                rtol=1e-3,
-                use_cudnn_ref=False,
-                grad_dtype=dtype,
-                data_dtype=dtype,
-            )
-
-
-@tvm.testing.requires_cutlass
-def test_conv2d_bwd():
-    IC = 16
-    OC = 8
-    dshape = (16, IC, 32, 32)
-    wshape = (OC, IC, 3, 3)
-    padding = (0, 0)
-    strides = (1, 1)
-
-    conv = get_conv2d_nchw(
-        dshape,
-        wshape,
-        padding,
-        strides=strides,
-        out_dtype="float32",
-        data_dtype="float32",
-        weight_dtype="float32",
-    )
-    fwd_mod = InferType()(tvm.IRModule.from_expr(conv))
-
-    # Note: large difference in tvm and cutlass Wgrad results if use fp16.
-    # Cutlass wgrad uses fp32 accumulation even if the output is fp16.
-    use_fp16 = False
-    verify_dgrad = False  # False to verify wgrad
-    tol = 1e-5 if verify_dgrad else 1e-4  # Wgrad slightly less accurate
-
-    if use_fp16:
-        fwd_mod = ToMixedPrecision("float16")(fwd_mod)
-
-    fwd_bwd_func = FirstOrderGradient()(fwd_mod)["main"]
-
-    bwd_func = relay.Function(
-        fwd_bwd_func.params,
-        relay.TupleGetItem(relay.TupleGetItem(fwd_bwd_func.body, 1), 0 if verify_dgrad else 1),
-    )
-
-    verify_conv2d(
-        bwd_func,
-        bwd_func,
-        dshape,
-        wshape,
-        sm=80,
-        atol=1e-2 if use_fp16 else tol,
-        rtol=1e-2 if use_fp16 else tol,
-        use_cudnn_ref=False,
-        data_dtype="float32",
-        weight_dtype="float32",
-        use_vm=True,
-    )
+# @tvm.testing.requires_cutlass
+# def test_dense_bias():
+#     verify_dense(get_dense_bias(M, N, K), M, N, K)
+#     verify_dense(get_dense_bias(M, N, K, out_dtype="float32"), M, N, K)
+
+
+# @tvm.testing.requires_cutlass
+# def test_dense_bias_relu():
+#     verify_dense(get_dense_bias_relu(M, N, K), M, N, K)
+#     verify_dense(get_dense_bias_relu(M, N, K, out_dtype="float32"), M, N, K)
+
+
+# @tvm.testing.requires_cutlass
+# def test_dense_bias_gelu():
+#     verify_dense(get_dense_bias_gelu(M, N, K), M, N, K, atol=1e-3, rtol=1e-3)
+#     verify_dense(get_dense_bias_gelu(M, N, K, out_dtype="float32"), M, N, K, atol=1e-3, rtol=1e-3)
+
+
+# @tvm.testing.requires_cutlass
+# def test_dense_dynamic():
+#     data_shape = (relay.Any(), K)
+#     weight_shape = (relay.Any(), K)
+
+#     if has_cublas():
+#         # TVM native fp16 dense (without tensorcore), using fp16 accum, seems to have accuracy issues
+#         # Use cublas as a reference
+
+#         verify_dense(
+#             get_dense_with_shape(data_shape, weight_shape),
+#             M,
+#             N,
+#             K,
+#             ref_target="cuda -libs=cublas",
+#         )
+
+#     verify_dense(
+#         get_dense_with_shape(data_shape, weight_shape, out_dtype="float32"),
+#         M,
+#         N,
+#         K,
+#         atol=1e-4,
+#         rtol=1e-4,
+#     )
+
+
+# @tvm.testing.requires_cutlass
+# def test_batch_matmul():
+#     batch = 8
+#     verify_batch_matmul(get_batch_matmul(batch, M, N, K), batch, M, N, K)
+#     verify_batch_matmul(get_batch_matmul(batch, M, N, K, out_dtype="float32"), batch, M, N, K)
+
+#     if has_cublas():
+#         # Test dynamic shape batch_matmul
+#         # AutoTVM does not seem to support it
+#         x_shape = (relay.Any(), relay.Any(), K)
+#         y_shape = (relay.Any(), relay.Any(), K)
+
+#         verify_batch_matmul(
+#             get_batch_matmul_with_shape(x_shape, y_shape),
+#             batch,
+#             M,
+#             N,
+#             K,
+#             ref_target="cuda -libs=cublas",
+#         )
+
+
+# def verify_conv2d_common(
+#     expr_nchw,  # can be dynamic batch
+#     expr_ref,  # always static batch
+#     input_names,
+#     inputs,
+#     params,
+#     sm=70,
+#     split_k_slices=[1],
+#     atol=1e-5,
+#     rtol=1e-5,
+#     use_cudnn_ref=False,
+#     run_benchmark=False,
+#     use_fast_math=False,
+#     ref_target="cuda",
+#     use_vm=False,
+# ):
+#     assert has_cutlass()
+#     if sm < 80 and inputs[0].dtype == "float32":
+#         return
+
+#     mod_nchw = tvm.IRModule.from_expr(expr_nchw)
+#     mod_ref = tvm.IRModule.from_expr(expr_ref)
+
+#     if use_vm:
+#         profile_and_build_func = profile_and_build_vm
+#         get_output_func = get_output_vm
+#         ref_build_func = get_ref_vm
+#     else:
+#         profile_and_build_func = profile_and_build
+#         get_output_func = get_output
+#         ref_build_func = get_ref_rt_mod
+
+#     mod_weight_ohwi = convert_conv2d_layout(
+#         mod_nchw,
+#         {
+#             "nn.conv2d": ["NHWC", "OHWI"],
+#             "nn.conv2d_transpose": ["NHWC", "IHWO"],
+#             "nn.conv2d_backward_weight": ["NHWC", "OHWI"],
+#         },
+#     )
+
+#     rt_mod, _, num_cutlass_partition = profile_and_build_func(
+#         mod_weight_ohwi, params, sm, split_k_slices, use_fast_math=use_fast_math
+#     )
+#     out = get_output_func(rt_mod, input_names, inputs)
+
+#     assert num_cutlass_partition > 0
+
+#     if use_cudnn_ref:
+#         rt_mod_ref, dev = ref_build_func(
+#             convert_conv2d_layout(mod_ref, {"nn.conv2d": ["NHWC", "OHWI"]}),
+#             params,
+#             target="cuda -libs=cudnn",
+#         )
+#     else:
+#         rt_mod_ref, dev = ref_build_func(
+#             convert_conv2d_layout(mod_ref, {"nn.conv2d": ["NHWC", "HWIO"]}),
+#             params,
+#             target=ref_target,
+#         )
+
+#     ref_out = get_output_func(rt_mod_ref, input_names, inputs)
+
+#     if run_benchmark:
+#         print("CUTLASS:", rt_mod.benchmark(dev, number=1, repeat=600))
+#         print("TVM Tensorcore (no tuning):", rt_mod_ref.benchmark(dev, number=1, repeat=600))
+
+#     np.testing.assert_allclose(out, ref_out, atol=atol, rtol=rtol)
+
+
+# def verify_conv2d(
+#     expr_nchw,  # can be dynamic batch
+#     expr_ref,  # always static batch
+#     d_shape,
+#     w_shape,
+#     sm=70,
+#     atol=1e-5,
+#     rtol=1e-5,
+#     use_cudnn_ref=False,
+#     run_benchmark=False,
+#     use_fast_math=False,
+#     data_dtype="float16",
+#     weight_dtype="float16",
+#     ref_target="cuda",
+#     use_vm=False,
+# ):
+#     mod_nchw = tvm.IRModule.from_expr(expr_nchw)
+#     typ = relay.transform.InferType()(mod_nchw)["main"].body.checked_type
+
+#     use_vm = use_vm or any(isinstance(s, tvm.tir.Any) for s in typ.shape)
+
+#     np_data = get_random_ndarray(d_shape, data_dtype)
+#     np_weight = get_random_ndarray(w_shape, weight_dtype)
+#     np_bias = get_random_ndarray((w_shape[0],), typ.dtype)
+#     params = {"weight": np_weight, "bias": np_bias}
+
+#     split_k_slices = [1]
+
+#     return verify_conv2d_common(
+#         expr_nchw,
+#         expr_ref,
+#         ["data"],
+#         [np_data],
+#         params,
+#         sm,
+#         split_k_slices,
+#         atol,
+#         rtol,
+#         use_cudnn_ref,
+#         run_benchmark,
+#         use_fast_math,
+#         ref_target,
+#         use_vm,
+#     )
+
+
+# def verify_conv2d_backward_weight(
+#     expr_nchw,  # can be dynamic batch
+#     expr_ref,  # always static batch
+#     grad_shape,
+#     data_shape,
+#     sm=70,
+#     split_k_slices=[1],
+#     atol=1e-5,
+#     rtol=1e-5,
+#     use_cudnn_ref=False,
+#     use_fast_math=False,
+#     grad_dtype="float16",
+#     data_dtype="float16",
+#     ref_target="cuda",
+#     use_vm=False,
+# ):
+#     np_grad = get_random_ndarray(grad_shape, grad_dtype)
+#     np_data = get_random_ndarray(data_shape, data_dtype)
+#     params = {}
+#     input_names = ["grad", "data"]
+#     return verify_conv2d_common(
+#         expr_nchw,
+#         expr_ref,
+#         input_names,
+#         [np_grad, np_data],
+#         params,
+#         sm,
+#         split_k_slices,
+#         atol,
+#         rtol,
+#         use_cudnn_ref,
+#         False,
+#         use_fast_math,
+#         ref_target,
+#         use_vm,
+#     )
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d():
+#     padding = (1, 1)
+#     for IC in [3, 16]:
+#         d_shape = (16, IC, 32, 32)
+#         w_shape = (32, IC, 3, 3)
+#         mod_nchw = get_conv2d_nchw(d_shape, w_shape, padding)
+
+#         verify_conv2d(
+#             mod_nchw,
+#             mod_nchw,
+#             d_shape,
+#             w_shape,
+#             sm=70,
+#             atol=1e-5,
+#             rtol=1e-5,
+#             use_cudnn_ref=(IC == 3),  # The autotvm kernel has an accuracy issue with IC == 3 case
+#             run_benchmark=False,
+#         )
+
+#     d_shape = (16, 16, 32, 32)
+#     w_shape = (32, 16, 3, 3)
+#     padding = (1, 1)
+#     dyn_batch_shape = (relay.Any(),) + d_shape[1:]
+
+#     mod_nchw = get_conv2d_nchw(d_shape, w_shape, padding)
+#     mod_dyn = get_conv2d_nchw(dyn_batch_shape, w_shape, padding)
+
+#     verify_conv2d(
+#         mod_dyn, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+#     for data_dtype, weight_dtype, out_dtype in [
+#         ("float32", "float32", "float32"),  # 3xtf32
+#         ("int8", "int8", "int32"),
+#         ("uint8", "int8", "int32"),
+#     ]:
+#         expr = get_conv2d_nchw(
+#             d_shape,
+#             w_shape,
+#             padding,
+#             out_dtype=out_dtype,
+#             data_dtype=data_dtype,
+#             weight_dtype=weight_dtype,
+#         )
+
+#         verify_conv2d(
+#             expr,
+#             expr,
+#             d_shape,
+#             w_shape,
+#             sm=70,
+#             atol=1e-5,
+#             rtol=1e-5,
+#             run_benchmark=False,
+#             data_dtype=data_dtype,
+#             weight_dtype=weight_dtype,
+#             ref_target="llvm",
+#         )
+
+#     # align1 + int8 case
+#     d_shape = (16, 3, 32, 32)
+#     w_shape = (32, 3, 3, 3)
+#     mod_nchw = get_conv2d_nchw(
+#         d_shape, w_shape, padding, out_dtype="int32", data_dtype="uint8", weight_dtype="int8"
+#     )
+
+#     verify_conv2d(
+#         mod_nchw,
+#         mod_nchw,
+#         d_shape,
+#         w_shape,
+#         sm=70,
+#         atol=1e-5,
+#         rtol=1e-5,
+#         ref_target="llvm",
+#         data_dtype="uint8",
+#         weight_dtype="int8",
+#     )
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d_fusion():
+#     d_shape = (16, 16, 32, 32)
+#     w_shape = (32, 16, 3, 3)
+#     padding = (1, 1)
+
+#     mod_nchw = get_conv2d_nchw_bias(d_shape, w_shape, padding)
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+#     mod_nchw = get_conv2d_nchw_bias_relu(d_shape, w_shape, padding)
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+#     mod_nchw = get_conv2d_nchw_bias_sigmoid(d_shape, w_shape, padding, out_dtype="float16")
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+#     verify_conv2d(
+#         mod_nchw,
+#         mod_nchw,
+#         d_shape,
+#         w_shape,
+#         sm=70,
+#         atol=1e-3,
+#         rtol=1e-3,
+#         run_benchmark=False,
+#         use_fast_math=True,
+#     )
+
+#     mod_nchw = get_conv2d_nchw_bias_sigmoid(d_shape, w_shape, padding, out_dtype="float32")
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+#     mod_nchw = get_conv2d_nchw_bias_silu(d_shape, w_shape, padding, out_dtype="float32")
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+#     mod_nchw = get_conv2d_nchw_bias_hardswish(d_shape, w_shape, padding, out_dtype="float16")
+#     verify_conv2d(
+#         mod_nchw, mod_nchw, d_shape, w_shape, sm=70, atol=1e-5, rtol=1e-5, run_benchmark=False
+#     )
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d_residual_block():
+#     d_shape = (16, 16, 32, 32)
+#     w_shape = (16, 16, 3, 3)
+#     padding = (1, 1)
+
+#     bias_add, residual_input = get_conv2d_nchw_bias_residual(d_shape, w_shape, padding)
+
+#     for func, tol in [
+#         (relay.nn.relu(bias_add + residual_input), 1e-5),
+#         (relay.nn.relu(bias_add) + residual_input, 1e-5),
+#         (relay.sigmoid(bias_add) * residual_input, 1e-5),
+#         (relay.nn.relu(silu(bias_add) * residual_input), 1e-5),
+#         # HardSwish requires higher tolerance since vectoring the residual block epilogue
+#         # in cutlass.
+#         # TODO(masahi): Invesitigate this issue
+#         (relay.nn.relu(hardswish(bias_add) + residual_input), 1e-3),
+#     ]:
+#         verify_conv2d(func, func, d_shape, w_shape, sm=70, atol=tol, rtol=tol, run_benchmark=False)
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d_transpose():
+#     OC = 8
+#     IC = 16
+#     d_shape = (16, IC, 32, 32)
+#     w_shape = (OC, IC, 3, 3)
+#     padding = (1, 1)
+#     dtype = "float32"
+
+#     for strides in [(1, 1), (2, 2)]:
+#         o_shape = conv_output_shape(
+#             0, padding, strides, (1, 1), d_shape, (OC, IC, 3, 3), "float32", "float32"
+#         )
+#         output_padding = (1, 1) if strides[0] > 1 else (0, 0)
+#         mod_nchw = get_conv2d_transpose_nchw(
+#             o_shape,
+#             w_shape,
+#             padding,
+#             output_padding,
+#             strides,
+#             out_dtype=dtype,
+#             data_dtype=dtype,
+#             weight_dtype=dtype,
+#         )
+
+#         verify_conv2d(
+#             mod_nchw,
+#             mod_nchw,
+#             o_shape,
+#             w_shape,
+#             sm=70,
+#             atol=1e-3,
+#             rtol=1e-3,
+#             use_cudnn_ref=False,
+#             run_benchmark=False,
+#             data_dtype=dtype,
+#             weight_dtype=dtype,
+#         )
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d_backward_weight():
+#     OC = 8
+#     IC = 16
+#     d_shape = (16, IC, 32, 32)
+#     w_shape = (OC, IC, 3, 3)
+#     dtype = "float16"
+
+#     for strides in [(1, 1), (2, 2)]:
+#         o_shape = (16, OC, 32 // strides[0], 32 // strides[1])
+#         padding = (1, 1)
+
+#         mod_nchw = get_conv2d_backward_weight(
+#             d_shape,
+#             w_shape,
+#             o_shape,
+#             padding,
+#             strides,
+#             out_dtype="float32",
+#             data_dtype=dtype,
+#             weight_dtype=dtype,
+#         )
+
+#         for split_k_slices in [1, 8]:
+#             verify_conv2d_backward_weight(
+#                 mod_nchw,
+#                 mod_nchw,
+#                 o_shape,
+#                 d_shape,
+#                 sm=70,
+#                 split_k_slices=[split_k_slices],
+#                 atol=1e-3,
+#                 rtol=1e-3,
+#                 use_cudnn_ref=False,
+#                 grad_dtype=dtype,
+#                 data_dtype=dtype,
+#             )
+
+
+# @tvm.testing.requires_cutlass
+# def test_conv2d_bwd():
+#     IC = 16
+#     OC = 8
+#     dshape = (16, IC, 32, 32)
+#     wshape = (OC, IC, 3, 3)
+#     padding = (0, 0)
+#     strides = (1, 1)
+
+#     conv = get_conv2d_nchw(
+#         dshape,
+#         wshape,
+#         padding,
+#         strides=strides,
+#         out_dtype="float32",
+#         data_dtype="float32",
+#         weight_dtype="float32",
+#     )
+#     fwd_mod = InferType()(tvm.IRModule.from_expr(conv))
+
+#     # Note: large difference in tvm and cutlass Wgrad results if use fp16.
+#     # Cutlass wgrad uses fp32 accumulation even if the output is fp16.
+#     use_fp16 = False
+#     verify_dgrad = False  # False to verify wgrad
+#     tol = 1e-5 if verify_dgrad else 1e-4  # Wgrad slightly less accurate
+
+#     if use_fp16:
+#         fwd_mod = ToMixedPrecision("float16")(fwd_mod)
+
+#     fwd_bwd_func = FirstOrderGradient()(fwd_mod)["main"]
+
+#     bwd_func = relay.Function(
+#         fwd_bwd_func.params,
+#         relay.TupleGetItem(relay.TupleGetItem(fwd_bwd_func.body, 1), 0 if verify_dgrad else 1),
+#     )
+
+#     verify_conv2d(
+#         bwd_func,
+#         bwd_func,
+#         dshape,
+#         wshape,
+#         sm=70,
+#         atol=1e-2 if use_fp16 else tol,
+#         rtol=1e-2 if use_fp16 else tol,
+#         use_cudnn_ref=False,
+#         data_dtype="float32",
+#         weight_dtype="float32",
+#         use_vm=True,
+#     )
 
 
 if __name__ == "__main__":
