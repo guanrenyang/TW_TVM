@@ -58,7 +58,7 @@ def get_tiled_matmul_kernel():
     # mask_k = [0 for i in range(K_pruned)]
     # mask_n = te.placeholder((N_dim,), name="mask_n")
 
-    A_transposed_skipped = te.compute((K_pruned, M), lambda i,j: A_transposed[i+mask_k[i], j], name='A_skipped')
+    A_transposed_skipped = te.compute((K_pruned, M), lambda i,j: A_transposed[mask_k[i], j], name='A_skipped')
 
     B_transposed_tiled = te.placeholder((N_dim, K_pruned), name='B_tiled')
     k = te.reduce_axis((0, K_pruned), name='k')
@@ -84,7 +84,7 @@ def get_tiled_matmul_kernel():
         A_transposed_skipped = np.zeros((K_pruned, M))
         for i in range(K_pruned):
             for j in range(M):
-                A_transposed_skipped[i, j] = A_transposed[i+mask_k[i], j]
+                A_transposed_skipped[i, j] = A_transposed[mask_k[i], j]
         C_transposed_skipped = (A_transposed_skipped.T @ B_transposed_tiled.T).T
         return C_transposed_skipped
     
