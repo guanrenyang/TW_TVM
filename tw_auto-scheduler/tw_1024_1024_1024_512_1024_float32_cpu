@@ -1,0 +1,26 @@
+Settings: M=1024 N=1024 K=1024 K_pruned_max=512 N_pruned_global=1024 dtye=float32 target=cpu
+Try tile_size=2 on cpu
+Execution time is 13.760 ms
+Try tile_size=4 on cpu
+Execution time is 49.242 ms
+Try tile_size=8 on cpu
+Execution time is 13.589 ms
+Try tile_size=16 on cpu
+Execution time is 18.619 ms
+Try tile_size=32 on cpu
+Execution time is 10.918 ms
+Try tile_size=64 on cpu
+Execution time is 11.147 ms
+Try tile_size=128 on cpu
+Execution time is 13.082 ms
+Try tile_size=256 on cpu
+Execution time is 7.121 ms
+Try tile_size=512 on cpu
+Execution time is 9.044 ms
+Try tile_size=1024 on cpu
+Execution time is 23.959 ms
+The best tile_size in cpu is 256
+The best execution time is 7.121
+
+
+
