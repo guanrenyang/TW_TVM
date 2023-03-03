@@ -1,8 +1,0 @@
-Settings: M=1024 N=1024 K=1024 K_pruned_max=512 N_pruned_global=1024 dtye=float32 target=cpu
-Try tile_size=32 on cpu
-The best tile_size in cpu is 32
-The best execution time is 11.843
-
-All results on cpu is  {32: 11.843273784330126}
-
-

@@ -1,0 +1,12 @@
+bazel-bin
+bazel-genfiles
+bazel-out
+bazel-testlogs
+*.log
+*.pyc
+output/
+data_set/
+envi_model_*
+envi_model_*/
+tmp/
+*_output/
