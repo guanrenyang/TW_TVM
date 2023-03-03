@@ -12,13 +12,13 @@ pre_masks_dir=""
 comment=${2}
 hostname=`hostname`
 # arch="vgg16"
-# arch="resnet18"
 arch="resnet50"
+# arch="resnet50"
 # arch="vit_b_16"
 
 log_output_dir="./${arch}_${hostname}_${pruning_type}_${batch_size}_${finetune_steps}_${mini_finetune_steps=10000}_${score_type}_gpu_${GPU_ID}_${comment}.log"
     command="
-    CUDA_VISIBLE_DEVICES=${GPU_ID} python -u main.py ${DATASET_DIR} -a ${arch} -p --prune\
+    CUDA_VISIBLE_DEVICES=${GPU_ID} python -u pruner.py ${DATASET_DIR} -a ${arch} -p --prune\
         --lr=5e-5 \
         --batch-size=$batch_size \
         --finetune_steps=${finetune_steps} \

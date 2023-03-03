@@ -15,6 +15,40 @@ import numpy as np
 import pdb
 
 
+
+def kernel2matrix(kernel):
+    # Get the shape of the kernel
+    out_channel, in_channel, kernel_height, kernel_width = kernel.shape
+    
+    # Reshape the kernel to (out_channel, in_channel * kernel_height * kernel_width)
+    # kernel = kernel.reshape(out_channel, -1)
+    
+    # Create the transformation matrix
+    transformation_matrix = np.zeros((out_channel * kernel_height * kernel_width, 
+                                       in_channel * kernel_height * kernel_width))
+    
+    for i in range(out_channel):
+        for j in range(in_channel):
+            for k in range(kernel_height):
+                for l in range(kernel_width):
+                    index = (i * kernel_height * kernel_width) + (k * kernel_width) + l
+                    transformation_matrix[index, j*(kernel_height*kernel_width)+(k*kernel_width)+l] = kernel[i,j,k,l]
+    
+    return transformation_matrix
+def matrix2kernel(transformation_matrix, out_channel, in_channel, kernel_height, kernel_width):
+    # Compute the size of the output kernel
+    kernel = np.zeros((out_channel, in_channel, kernel_height, kernel_width))
+    
+    for i in range(out_channel):
+        for j in range(in_channel):
+            for k in range(kernel_height):
+                for l in range(kernel_width):
+                    index = (i * kernel_height * kernel_width) + (k * kernel_width) + l
+                    kernel_index = (i, j, k, l)
+                    kernel[kernel_index] = transformation_matrix[index, j*(kernel_height*kernel_width)+(k*kernel_width)+l]
+    
+    return kernel
+
 def img2col_forward(accumulated_scores):
     new_accumulated_scores = []
     for l in accumulated_scores:
@@ -113,11 +147,12 @@ def tiled_wise_2d(accumulated_scores, sparsity, granularity = 64):
     return new_mask_values
 
 def tiled_wise_1d(accumulated_scores, sparsity, granularity = 64):
-    # granularity pruning on whole layer
+    # granularity pruning on whole layer (K dimension for a K*N matrix)
     l2_norm_list = []
     split_score_list = []
     for layer in range(len(accumulated_scores)):
         score = accumulated_scores[layer]
+
         block_num = score.shape[1] // granularity
         if score.shape[1] % granularity == 0:
             split_score = np.split(score, block_num, axis=1)
@@ -126,10 +161,11 @@ def tiled_wise_1d(accumulated_scores, sparsity, granularity = 64):
             if block_num != 0:
                 split_score = np.split(score[:,0:block_num * granularity], block_num, axis=1)
             split_score.append(score[:,block_num * granularity:score.shape[1]])
-
+        
         split_l2_norm = [ np.linalg.norm(w, axis=1) / w.shape[1] for w in split_score ]
         l2_norm_list.append(split_l2_norm)
         split_score_list.append(split_score)
+        
     
     split_layer_l2_norm_list = [ v for n in l2_norm_list for v in n]
     split_weight_l2_norm_list = [ v for n in split_layer_l2_norm_list for v in n]
@@ -139,6 +175,7 @@ def tiled_wise_1d(accumulated_scores, sparsity, granularity = 64):
     new_mask_values = []
     for layer in range(len(accumulated_scores)):
         split_score = split_score_list[layer]
+
         split_mask = [ norm > threshold for norm in l2_norm_list[layer] ]
         split_mask = [ mask.reshape(mask.shape[0], 1) for mask in split_mask ]
         split_mask = [ np.tile(m, (1, split_score[i].shape[1])).reshape(split_score[i].shape) for i, m in enumerate(split_mask) ]

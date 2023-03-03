@@ -103,6 +103,29 @@ def pruning_info(model):
             
     print("ALL Density  : %f " %(non_zeros/lengths))
     print("ALL Sparsity : %f " %(1- non_zeros/lengths))
+import numpy as np
+
+# def kernel2matrix2(kernel):
+#     # Get the shape of the kernel
+#     out_channel, in_channel, kernel_height, kernel_width = kernel.shape
+    
+#     # Reshape the kernel to (out_channel, -1)
+#     kernel = kernel.reshape(out_channel, -1)
+    
+#     # Create the transformation matrix
+#     transformation_matrix = np.zeros((out_channel * kernel_height * kernel_width, 
+#                                        in_channel * kernel_height * kernel_width))
+    
+#     for i in range(out_channel):
+#         for j in range(in_channel):
+#             for k in range(kernel_height):
+#                 for l in range(kernel_width):
+#                     index = (i * kernel_height * kernel_width) + (k * kernel_width) + l
+#                     kernel_index = (i, j, k, l)
+#                     transformation_matrix[index, j*(kernel_height*kernel_width)+(k*kernel_width)+l] = kernel[i, kernel_index[1]*kernel_height*kernel_width + k*kernel_width + l]
+    
+#     return transformation_matrix
+
 
 def update_mask(model, sparsity, pruning_type, masks_now = None):
     id = 0
@@ -113,7 +136,7 @@ def update_mask(model, sparsity, pruning_type, masks_now = None):
             if id in masks_now:
                 scores.append(module.dump_weight())
             id += 1
-
+    
     new_accumulated_scores = pruning_algo.img2col_forward(scores)
     new_mask_values = pruning_algo.pruning_fun(pruning_type)(new_accumulated_scores, sparsity)
     new_mask_values = pruning_algo.img2col_back_ward(new_mask_values, scores) 

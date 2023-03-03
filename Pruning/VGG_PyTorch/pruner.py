@@ -23,7 +23,7 @@ model_names = [
 ]
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('data', metavar='DIR', help='path to dataset')
+parser.add_argument('data', metavar='DIR', default='/home/cguo/imagenet-raw-data/', help='path to dataset')
 parser.add_argument('-a', '--arch', metavar='ARCH', default='alexnet', choices=model_names,
                     help='model architecture: ' + ' | '.join(model_names) + ' (default: alexnet)')
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -32,7 +32,7 @@ parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful to restarts)')
 parser.add_argument('-b', '--batch-size', default=256, type=int, metavar='N',
                     help='mini-batch size (default: 256)')
-parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, metavar='LR',
+parser.add_argument('--lr', '--learning-rate', default=0.001, type=float, metavar='LR',
                     help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
@@ -55,7 +55,7 @@ parser.add_argument('--prune', dest='prune', action='store_true',
                     help='prune and finetune model')
 parser.add_argument('--eval', dest='eval', action='store_true',
                     help='Evaluation')
-parser.add_argument('--pruning_type', default='ew', type=str, metavar='N',
+parser.add_argument('--pruning_type', default='tw1', type=str, metavar='N',
                     help='The pruning_type for network pruning, (default: ew)')
 parser.add_argument('--pre_masks_dir', default=None, type=str, metavar='N',
                     help='The pre_masks_dir for network pruning, (default: None)')
@@ -68,9 +68,9 @@ parser.add_argument('--mini_finetune_steps', default=5000, type=int, metavar='N'
 best_prec1 = 0.0
 
 
-def main():
+def get_accuracy(sparsity, tile_size):
     global args, best_prec1
-    args = parser.parse_args()·
+    args = parser.parse_args()
 
     # create model
     if args.pretrained:
@@ -110,19 +110,19 @@ def main():
     # Data loading
     train_loader, val_loader = data_loader(args.data, args.batch_size, args.workers, args.pin_memory)
 
-    if args.evaluate:
-        validate(val_loader, model, criterion, args.print_freq)
-        return
+    # if args.evaluate:
+    #     validate(val_loader, model, criterion, args.print_freq)
+    #     return
 
     if args.prune:
         # validate(val_loader, model, criterion, args.print_freq)
         print("train size:", len(train_loader))
-        prune(val_loader, train_loader, model, optimizer, criterion, args.print_freq)
-        return
+        prec1, prec5 = prune(val_loader, train_loader, model, optimizer, criterion, args.print_freq)
+        return  prec1, prec5
 
-    if args.eval:
-        validate(val_loader, model, criterion, args.print_freq)
-        return
+    # if args.eval:
+    #     validate(val_loader, model, criterion, args.print_freq)
+    #     return
 
 
     # for epoch in range(args.start_epoch, args.epochs):
@@ -308,6 +308,7 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
             masks_now = pruning_layers[layer]
             update_mask(model, sparsity, pruning_type, masks_now)
         print('Done Prune !!!\n')
+        input()
         pruning_info(model)
         for _ in range(6):
             print('Mini Fine Tune !')
@@ -372,9 +373,8 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
         previous_mask_values = copy.deepcopy(dump_mask(model))
         with open(masks_dir / ("mask_" + str(sparsity) + ".pkl"), "wb") as file:
             pickle.dump(dump_mask(model), file)
-
-    return
+    
+    return prec1, prec5
 
 if __name__ == '__main__':
-    
-    main()
+    get_accuracy()
