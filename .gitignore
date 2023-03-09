@@ -2,3 +2,11 @@
 .idea/
 tries/
 TileSparsity2.0/
+AutoSchedule/Outputs/:
+AutoSchedule/.pkl_memoize_py3/
+AutoSchedule/__pycache__/
+Pruning/BERT/
+Pruning/NMT/
+Pruning/VGG/
+Pruning/__pycache__/
+

@@ -1,0 +1,375 @@
+Try tile_size=2, sparsity=0.100 on gpu
+Execution time is 0.652+0.013=0.664 ms
+Try tile_size=2, sparsity=0.200 on gpu
+Execution time is 0.588+0.013=0.601 ms
+Try tile_size=2, sparsity=0.300 on gpu
+Execution time is 0.539+0.013=0.552 ms
+Try tile_size=2, sparsity=0.400 on gpu
+Execution time is 0.448+0.013=0.461 ms
+Try tile_size=2, sparsity=0.500 on gpu
+Execution time is 0.374+0.013=0.387 ms
+Try tile_size=2, sparsity=0.600 on gpu
+Execution time is 0.308+0.013=0.321 ms
+Try tile_size=2, sparsity=0.700 on gpu
+Execution time is 0.248+0.013=0.261 ms
+Try tile_size=2, sparsity=0.800 on gpu
+Execution time is 0.164+0.013=0.176 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.8, exec_time=0.17646048374988907
+Try tile_size=2, sparsity=0.900 on gpu
+Execution time is 0.090+0.013=0.103 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.9, exec_time=0.10323416547677398
+Try tile_size=2, sparsity=0.920 on gpu
+Execution time is 0.070+0.013=0.083 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.92, exec_time=0.08284116173358982
+Try tile_size=2, sparsity=0.940 on gpu
+Execution time is 0.057+0.013=0.070 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.94, exec_time=0.06973293707991056
+Try tile_size=2, sparsity=0.960 on gpu
+Execution time is 0.040+0.013=0.053 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.96, exec_time=0.052810044071696025
+Try tile_size=2, sparsity=0.980 on gpu
+Execution time is 0.023+0.013=0.035 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.98, exec_time=0.035431388659992326
+Try tile_size=2, sparsity=0.990 on gpu
+Execution time is 0.016+0.013=0.029 ms
+	 Find an efficient Kernel, tile_size=2, sparsity=0.99, exec_time=0.028833564550314408
+Try tile_size=4, sparsity=0.100 on gpu
+Execution time is 0.363+0.013=0.376 ms
+Try tile_size=4, sparsity=0.200 on gpu
+Execution time is 0.341+0.013=0.353 ms
+Try tile_size=4, sparsity=0.300 on gpu
+Execution time is 0.307+0.013=0.320 ms
+Try tile_size=4, sparsity=0.400 on gpu
+Execution time is 0.393+0.013=0.405 ms
+Try tile_size=4, sparsity=0.500 on gpu
+Execution time is 0.231+0.013=0.244 ms
+Try tile_size=4, sparsity=0.600 on gpu
+Execution time is 0.218+0.013=0.231 ms
+Try tile_size=4, sparsity=0.700 on gpu
+Execution time is 0.194+0.013=0.207 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.7, exec_time=0.20702355230441244
+Try tile_size=4, sparsity=0.800 on gpu
+Execution time is 0.103+0.013=0.116 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.8, exec_time=0.11557243091845112
+Try tile_size=4, sparsity=0.900 on gpu
+Execution time is 0.053+0.013=0.066 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.9, exec_time=0.06619013634902855
+Try tile_size=4, sparsity=0.920 on gpu
+Execution time is 0.047+0.013=0.060 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.92, exec_time=0.06022781661781626
+Try tile_size=4, sparsity=0.940 on gpu
+Execution time is 0.041+0.013=0.054 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.94, exec_time=0.05384993252003105
+Try tile_size=4, sparsity=0.960 on gpu
+Execution time is 0.024+0.013=0.037 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.96, exec_time=0.036923490600004195
+Try tile_size=4, sparsity=0.980 on gpu
+Execution time is 0.017+0.013=0.030 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.98, exec_time=0.029564556245200144
+Try tile_size=4, sparsity=0.990 on gpu
+Execution time is 0.013+0.013=0.026 ms
+	 Find an efficient Kernel, tile_size=4, sparsity=0.99, exec_time=0.02555793023156891
+Try tile_size=8, sparsity=0.100 on gpu
+Execution time is 0.321+0.013=0.334 ms
+Try tile_size=8, sparsity=0.200 on gpu
+Execution time is 0.230+0.013=0.243 ms
+Try tile_size=8, sparsity=0.300 on gpu
+Execution time is 0.213+0.013=0.225 ms
+Try tile_size=8, sparsity=0.400 on gpu
+Execution time is 0.216+0.013=0.229 ms
+Try tile_size=8, sparsity=0.500 on gpu
+Execution time is 0.153+0.013=0.166 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.5, exec_time=0.1661366947598273
+Try tile_size=8, sparsity=0.600 on gpu
+Execution time is 0.209+0.013=0.222 ms
+Try tile_size=8, sparsity=0.700 on gpu
+Execution time is 0.156+0.013=0.168 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.7, exec_time=0.16841911620899133
+Try tile_size=8, sparsity=0.800 on gpu
+Execution time is 0.067+0.013=0.079 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.8, exec_time=0.07946873990020668
+Try tile_size=8, sparsity=0.900 on gpu
+Execution time is 0.038+0.013=0.051 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.9, exec_time=0.05111613394491699
+Try tile_size=8, sparsity=0.920 on gpu
+Execution time is 0.031+0.013=0.044 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.92, exec_time=0.04366319865269029
+Try tile_size=8, sparsity=0.940 on gpu
+Execution time is 0.030+0.013=0.043 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.94, exec_time=0.0427497993233506
+Try tile_size=8, sparsity=0.960 on gpu
+Execution time is 0.021+0.013=0.034 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.96, exec_time=0.03394640210384529
+Try tile_size=8, sparsity=0.980 on gpu
+Execution time is 0.014+0.013=0.027 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.98, exec_time=0.02721445104672318
+Try tile_size=8, sparsity=0.990 on gpu
+Execution time is 0.010+0.013=0.023 ms
+	 Find an efficient Kernel, tile_size=8, sparsity=0.99, exec_time=0.023290969076238816
+Try tile_size=16, sparsity=0.100 on gpu
+Execution time is 0.254+0.013=0.267 ms
+Try tile_size=16, sparsity=0.200 on gpu
+Execution time is 0.212+0.013=0.225 ms
+Try tile_size=16, sparsity=0.300 on gpu
+Execution time is 0.190+0.013=0.203 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.3, exec_time=0.20270055932842093
+Try tile_size=16, sparsity=0.400 on gpu
+Execution time is 0.201+0.013=0.214 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.4, exec_time=0.21440669546893548
+Try tile_size=16, sparsity=0.500 on gpu
+Execution time is 0.122+0.013=0.135 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.5, exec_time=0.13475013304964822
+Try tile_size=16, sparsity=0.600 on gpu
+Execution time is 0.198+0.013=0.211 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.6, exec_time=0.21092598319752634
+Try tile_size=16, sparsity=0.700 on gpu
+Execution time is 0.161+0.013=0.174 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.7, exec_time=0.17447129828657115
+Try tile_size=16, sparsity=0.800 on gpu
+Execution time is 0.055+0.013=0.068 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.8, exec_time=0.06818398957887538
+Try tile_size=16, sparsity=0.900 on gpu
+Execution time is 0.039+0.013=0.052 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.9, exec_time=0.05173892316615717
+Try tile_size=16, sparsity=0.920 on gpu
+Execution time is 0.029+0.013=0.042 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.92, exec_time=0.04241255003253695
+Try tile_size=16, sparsity=0.940 on gpu
+Execution time is 0.042+0.013=0.055 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.94, exec_time=0.054963073424528074
+Try tile_size=16, sparsity=0.960 on gpu
+Execution time is 0.017+0.013=0.030 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.96, exec_time=0.029955455497436695
+Try tile_size=16, sparsity=0.980 on gpu
+Execution time is 0.011+0.013=0.024 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.98, exec_time=0.02413016057309747
+Try tile_size=16, sparsity=0.990 on gpu
+Execution time is 0.008+0.013=0.021 ms
+	 Find an efficient Kernel, tile_size=16, sparsity=0.99, exec_time=0.021299362341577602
+Try tile_size=32, sparsity=0.100 on gpu
+Execution time is 0.314+0.013=0.327 ms
+Try tile_size=32, sparsity=0.200 on gpu
+Execution time is 0.331+0.027=0.358 ms
+Try tile_size=32, sparsity=0.300 on gpu
+Execution time is 0.299+0.025=0.324 ms
+Try tile_size=32, sparsity=0.400 on gpu
+Execution time is 0.214+0.013=0.227 ms
+Try tile_size=32, sparsity=0.500 on gpu
+Execution time is 0.173+0.013=0.186 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.5, exec_time=0.18601133823156718
+Try tile_size=32, sparsity=0.600 on gpu
+Execution time is 0.197+0.024=0.221 ms
+Try tile_size=32, sparsity=0.700 on gpu
+Execution time is 0.262+0.013=0.276 ms
+Try tile_size=32, sparsity=0.800 on gpu
+Execution time is 0.070+0.013=0.084 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.8, exec_time=0.0838497773920357
+Try tile_size=32, sparsity=0.900 on gpu
+Execution time is 0.071+0.027=0.098 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.9, exec_time=0.09837339520708227
+Try tile_size=32, sparsity=0.920 on gpu
+Execution time is 0.044+0.013=0.056 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.92, exec_time=0.05633138338168842
+Try tile_size=32, sparsity=0.940 on gpu
+Execution time is 0.042+0.027=0.069 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.94, exec_time=0.06907430115900096
+Try tile_size=32, sparsity=0.960 on gpu
+Execution time is 0.031+0.013=0.043 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.96, exec_time=0.04328911119850679
+Try tile_size=32, sparsity=0.980 on gpu
+Execution time is 0.021+0.027=0.048 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.98, exec_time=0.048143464117815324
+Try tile_size=32, sparsity=0.990 on gpu
+Execution time is 0.008+0.013=0.021 ms
+	 Find an efficient Kernel, tile_size=32, sparsity=0.99, exec_time=0.020725147807780522
+Try tile_size=64, sparsity=0.100 on gpu
+Execution time is 0.271+0.014=0.285 ms
+Try tile_size=64, sparsity=0.200 on gpu
+Execution time is 0.203+0.014=0.217 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.2, exec_time=0.21702524562915382
+Try tile_size=64, sparsity=0.300 on gpu
+Execution time is 0.192+0.014=0.206 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.3, exec_time=0.20612998745107114
+Try tile_size=64, sparsity=0.400 on gpu
+Execution time is 0.221+0.014=0.235 ms
+Try tile_size=64, sparsity=0.500 on gpu
+Execution time is 0.117+0.014=0.131 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.5, exec_time=0.1306471294903263
+Try tile_size=64, sparsity=0.600 on gpu
+Execution time is 0.211+0.014=0.225 ms
+Try tile_size=64, sparsity=0.700 on gpu
+Execution time is 0.150+0.014=0.164 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.7, exec_time=0.16427240993086867
+Try tile_size=64, sparsity=0.800 on gpu
+Execution time is 0.056+0.014=0.070 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.8, exec_time=0.06968864268327836
+Try tile_size=64, sparsity=0.900 on gpu
+Execution time is 0.032+0.014=0.046 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.9, exec_time=0.04611268637204187
+Try tile_size=64, sparsity=0.920 on gpu
+Execution time is 0.029+0.014=0.043 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.92, exec_time=0.0429233340966309
+Try tile_size=64, sparsity=0.940 on gpu
+Execution time is 0.019+0.014=0.033 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.94, exec_time=0.03337343288066982
+Try tile_size=64, sparsity=0.960 on gpu
+Execution time is 0.014+0.014=0.028 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.96, exec_time=0.027938995118204243
+Try tile_size=64, sparsity=0.980 on gpu
+Execution time is 0.008+0.014=0.022 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.98, exec_time=0.022172042459321063
+Try tile_size=64, sparsity=0.990 on gpu
+Execution time is 0.006+0.014=0.020 ms
+	 Find an efficient Kernel, tile_size=64, sparsity=0.99, exec_time=0.019721855584322743
+Try tile_size=128, sparsity=0.100 on gpu
+Execution time is 0.258+0.014=0.272 ms
+Try tile_size=128, sparsity=0.200 on gpu
+Execution time is 0.215+0.014=0.229 ms
+Try tile_size=128, sparsity=0.300 on gpu
+Execution time is 0.192+0.014=0.207 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.3, exec_time=0.20650316347888115
+Try tile_size=128, sparsity=0.400 on gpu
+Execution time is 0.213+0.014=0.227 ms
+Try tile_size=128, sparsity=0.500 on gpu
+Execution time is 0.123+0.015=0.138 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.5, exec_time=0.1380315210759091
+Try tile_size=128, sparsity=0.600 on gpu
+Execution time is 0.196+0.015=0.211 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.6, exec_time=0.21084164985749027
+Try tile_size=128, sparsity=0.700 on gpu
+Execution time is 0.127+0.015=0.142 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.7, exec_time=0.14153583415954787
+Try tile_size=128, sparsity=0.800 on gpu
+Execution time is 0.057+0.014=0.071 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.8, exec_time=0.07121103014041608
+Try tile_size=128, sparsity=0.900 on gpu
+Execution time is 0.031+0.015=0.046 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.9, exec_time=0.04560998479733174
+Try tile_size=128, sparsity=0.920 on gpu
+Execution time is 0.024+0.014=0.039 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.92, exec_time=0.03850496999935142
+Try tile_size=128, sparsity=0.940 on gpu
+Execution time is 0.020+0.014=0.035 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.94, exec_time=0.034772027929106636
+Try tile_size=128, sparsity=0.960 on gpu
+Execution time is 0.012+0.015=0.027 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.96, exec_time=0.026868892781276563
+Try tile_size=128, sparsity=0.980 on gpu
+Execution time is 0.008+0.015=0.023 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.98, exec_time=0.02268407216791167
+Try tile_size=128, sparsity=0.990 on gpu
+Execution time is 0.006+0.015=0.021 ms
+	 Find an efficient Kernel, tile_size=128, sparsity=0.99, exec_time=0.020653410221579318
+Try tile_size=256, sparsity=0.100 on gpu
+Execution time is 0.272+0.018=0.290 ms
+Try tile_size=256, sparsity=0.200 on gpu
+Execution time is 0.192+0.018=0.210 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.2, exec_time=0.20964432923012094
+Try tile_size=256, sparsity=0.300 on gpu
+Execution time is 0.188+0.018=0.206 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.3, exec_time=0.20638137214331606
+Try tile_size=256, sparsity=0.400 on gpu
+Execution time is 0.199+0.018=0.218 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.4, exec_time=0.21750263699507857
+Try tile_size=256, sparsity=0.500 on gpu
+Execution time is 0.121+0.018=0.140 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.5, exec_time=0.13979433056309884
+Try tile_size=256, sparsity=0.600 on gpu
+Execution time is 0.200+0.018=0.219 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.6, exec_time=0.21882228696246914
+Try tile_size=256, sparsity=0.700 on gpu
+Execution time is 0.153+0.018=0.171 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.7, exec_time=0.17131323068718246
+Try tile_size=256, sparsity=0.800 on gpu
+Execution time is 0.060+0.018=0.078 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.8, exec_time=0.07792567864470436
+Try tile_size=256, sparsity=0.900 on gpu
+Execution time is 0.032+0.018=0.051 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.9, exec_time=0.050760108527894046
+Try tile_size=256, sparsity=0.920 on gpu
+Execution time is 0.024+0.018=0.043 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.92, exec_time=0.042764819641855134
+Try tile_size=256, sparsity=0.940 on gpu
+Execution time is 0.019+0.018=0.038 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.94, exec_time=0.03774479937252477
+Try tile_size=256, sparsity=0.960 on gpu
+Execution time is 0.014+0.018=0.032 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.96, exec_time=0.03222429807360383
+Try tile_size=256, sparsity=0.980 on gpu
+Execution time is 0.008+0.018=0.026 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.98, exec_time=0.02639719641923989
+Try tile_size=256, sparsity=0.990 on gpu
+Execution time is 0.006+0.018=0.024 ms
+	 Find an efficient Kernel, tile_size=256, sparsity=0.99, exec_time=0.024351000244871853
+Try tile_size=512, sparsity=0.100 on gpu
+Execution time is 0.269+0.033=0.301 ms
+Try tile_size=512, sparsity=0.200 on gpu
+Execution time is 0.198+0.033=0.230 ms
+Try tile_size=512, sparsity=0.300 on gpu
+Execution time is 0.208+0.033=0.241 ms
+Try tile_size=512, sparsity=0.400 on gpu
+Execution time is 0.209+0.033=0.242 ms
+Try tile_size=512, sparsity=0.500 on gpu
+Execution time is 0.110+0.032=0.142 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.5, exec_time=0.14220355683340485
+Try tile_size=512, sparsity=0.600 on gpu
+Execution time is 0.206+0.033=0.238 ms
+Try tile_size=512, sparsity=0.700 on gpu
+Execution time is 0.161+0.033=0.194 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.7, exec_time=0.19381956264117492
+Try tile_size=512, sparsity=0.800 on gpu
+Execution time is 0.049+0.032=0.081 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.8, exec_time=0.0813926168277039
+Try tile_size=512, sparsity=0.900 on gpu
+Execution time is 0.028+0.032=0.061 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.9, exec_time=0.0608297258082086
+Try tile_size=512, sparsity=0.920 on gpu
+Execution time is 0.022+0.032=0.055 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.92, exec_time=0.05483497283801867
+Try tile_size=512, sparsity=0.940 on gpu
+Execution time is 0.019+0.032=0.052 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.94, exec_time=0.05187680320173799
+Try tile_size=512, sparsity=0.960 on gpu
+Execution time is 0.011+0.032=0.044 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.96, exec_time=0.043868956855357036
+Try tile_size=512, sparsity=0.980 on gpu
+Execution time is 0.007+0.032=0.040 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.98, exec_time=0.03960202653900733
+Try tile_size=512, sparsity=0.990 on gpu
+Execution time is 0.006+0.032=0.038 ms
+	 Find an efficient Kernel, tile_size=512, sparsity=0.99, exec_time=0.038031473608013795
+Try tile_size=1024, sparsity=0.100 on gpu
+Execution time is 0.241+0.064=0.305 ms
+Try tile_size=1024, sparsity=0.200 on gpu
+Execution time is 0.197+0.064=0.260 ms
+Try tile_size=1024, sparsity=0.300 on gpu
+Execution time is 0.181+0.064=0.244 ms
+Try tile_size=1024, sparsity=0.400 on gpu
+Execution time is 0.211+0.064=0.275 ms
+Try tile_size=1024, sparsity=0.500 on gpu
+Execution time is 0.118+0.064=0.182 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.5, exec_time=0.1821586201056815
+Try tile_size=1024, sparsity=0.600 on gpu
+Execution time is 0.210+0.064=0.273 ms
+Try tile_size=1024, sparsity=0.700 on gpu
+Execution time is 0.125+0.064=0.189 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.7, exec_time=0.18850719583736303
+Try tile_size=1024, sparsity=0.800 on gpu
+Execution time is 0.052+0.064=0.115 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.8, exec_time=0.11514841534781273
+Try tile_size=1024, sparsity=0.900 on gpu
+Execution time is 0.029+0.064=0.093 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.9, exec_time=0.09296446284036113
+Try tile_size=1024, sparsity=0.920 on gpu
+Execution time is 0.022+0.064=0.086 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.92, exec_time=0.08585007702337186
+Try tile_size=1024, sparsity=0.940 on gpu
+Execution time is 0.017+0.064=0.081 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.94, exec_time=0.08070356266666337
+Try tile_size=1024, sparsity=0.960 on gpu
+Execution time is 0.012+0.064=0.076 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.96, exec_time=0.07562128883602608
+Try tile_size=1024, sparsity=0.980 on gpu
+Execution time is 0.008+0.064=0.072 ms
+	 Find an efficient Kernel, tile_size=1024, sparsity=0.98, exec_time=0.07178675217005251
+Try tile_size=1024, sparsity=0.990 on gpu

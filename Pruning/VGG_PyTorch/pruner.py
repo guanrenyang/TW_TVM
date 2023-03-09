@@ -14,6 +14,7 @@ from models import *
 from data_loader import data_loader
 from helper import *
 
+import time
 model_names = [
     'alexnet', 'squeezenet1_0', 'squeezenet1_1', 'densenet121',
     'densenet169', 'densenet201', 'densenet201', 'densenet161',
@@ -21,11 +22,18 @@ model_names = [
     'vgg19', 'vgg19_bn', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
     'resnet152', "vit_b_16"
 ]
+dataset_names = [
+    'cifar10', 'imagenet'
+]
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('data', metavar='DIR', default='/home/cguo/imagenet-raw-data/', help='path to dataset')
-parser.add_argument('-a', '--arch', metavar='ARCH', default='alexnet', choices=model_names,
+
+parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18', choices=model_names,
                     help='model architecture: ' + ' | '.join(model_names) + ' (default: alexnet)')
+parser.add_argument('-d', '--dataset', metavar='DATASET', default='cifar10', choices=dataset_names, 
+                    help='dataset: ' + ' | '.join(dataset_names) + ' (default: cifar10)')
+# parser.add_argument('--datadir', metavar='DIR', default='/home/cguo/imagenet-raw-data/', help='path to dataset')
+
 parser.add_argument('--epochs', default=90, type=int, metavar='N',
                     help='numer of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
@@ -48,13 +56,11 @@ parser.add_argument('--print-freq', '-f', default=10, type=int, metavar='N',
                     help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint, (default: None)')
+
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
-
 parser.add_argument('--prune', dest='prune', action='store_true',
                     help='prune and finetune model')
-parser.add_argument('--eval', dest='eval', action='store_true',
-                    help='Evaluation')
 parser.add_argument('--pruning_type', default='tw1', type=str, metavar='N',
                     help='The pruning_type for network pruning, (default: ew)')
 parser.add_argument('--pre_masks_dir', default=None, type=str, metavar='N',
@@ -68,7 +74,8 @@ parser.add_argument('--mini_finetune_steps', default=5000, type=int, metavar='N'
 best_prec1 = 0.0
 
 
-def get_accuracy(sparsity, tile_size):
+def get_accuracy(target_sparsity, tile_size):
+
     global args, best_prec1
     args = parser.parse_args()
 
@@ -77,6 +84,7 @@ def get_accuracy(sparsity, tile_size):
         print("=> using pre-trained model '{}'".format(args.arch))
     else:
         print("=> creating model '{}'".format(args.arch))
+
     model = get_model(args.arch)
     model = pruning_model(model)
     # use cuda
@@ -101,28 +109,19 @@ def get_accuracy(sparsity, tile_size):
             with open(args.pre_masks_dir, "rb") as file:
                 all_mask_values = pickle.load(file)
                 load_mask(model, all_mask_values)
-    else:
-        pass
-        # print("=> no checkpoint found at '{}'".format(args.resume))
-
-    # cudnn.benchmark = True
+        else:
+            print("=> no checkpoint found at '{}'".format(args.resume))
 
     # Data loading
-    train_loader, val_loader = data_loader(args.data, args.batch_size, args.workers, args.pin_memory)
+    train_loader, val_loader = data_loader(args.dataset, args.batch_size, args.workers, args.pin_memory)
 
-    # if args.evaluate:
-    #     validate(val_loader, model, criterion, args.print_freq)
-    #     return
+    # Pruning
+    # validate(val_loader, model, criterion, args.print_freq)
+    print("[LOG] Start Pruning: Sparsity={}, Tile_size = {}".format(target_sparsity , tile_size))
+    print("train size:", len(train_loader))
+    prec1, prec5 = prune(target_sparsity, tile_size, val_loader, train_loader, model, optimizer, criterion, args.print_freq)
+    return  prec1, prec5
 
-    if args.prune:
-        # validate(val_loader, model, criterion, args.print_freq)
-        print("train size:", len(train_loader))
-        prec1, prec5 = prune(val_loader, train_loader, model, optimizer, criterion, args.print_freq)
-        return  prec1, prec5
-
-    # if args.eval:
-    #     validate(val_loader, model, criterion, args.print_freq)
-    #     return
 
 
     # for epoch in range(args.start_epoch, args.epochs):
@@ -228,37 +227,38 @@ def validate(val_loader, model, criterion, print_freq):
 
             if i % print_freq == 0:
                 print('Test: [{0}/{1}]\t'
-                      'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                      'Batch_Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                       'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                       'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
                       'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                     i, len(val_loader), batch_time=batch_time, loss=losses,
                     top1=top1, top5=top5))
 
-    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'.format(top1=top1, top5=top5))
+    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}\n'.format(top1=top1, top5=top5))
 
     return top1.avg, top5.avg
 
-def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
+def prune(target_sparsity, tile_size, val_loader, train_loader, model, optimizer, criterion, print_freq):
     now = time.strftime("%Y-%m-%d-%H_%M_%S",time.localtime(time.time())) 
     pruning_type = args.pruning_type
-    model_dir = root_dir() / "train" / args.arch / pruning_type / now
+    model_dir = root_dir() / "prune" / args.arch / args.dataset / pruning_type / now
+    
     finetune_steps = int(args.finetune_steps)
     mini_finetune_steps = int(args.mini_finetune_steps)
 
-    if "tw" in pruning_type:
-        pruning_layers = [[0,1,2,3],[4,5,6],[7,8,9],[10,11,12]]
-        sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
-    if "ew" in pruning_type:
-        pruning_layers = [[0,1,2,3,4,5,6,7,8,9,10,11,12]]
-        sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
+    # if "tw" in pruning_type:
+    #     pruning_layers = [[0,1,2,3],[4,5,6],[7,8,9],[10,11,12]]
+    #     sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
+    # if "ew" in pruning_type:
+    #     pruning_layers = [[0,1,2,3,4,5,6,7,8,9,10,11,12]]
+    #     sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
 
-    if "bw" in pruning_type:
-        pruning_layers = [[0,1],[2,3],[4,5,6],[7,8,9],[10,11,12]]
-        sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
-    if "twvw" in pruning_type:
-        pruning_layers = [[0,1],[2,3],[4,5,6],[7,8,9],[10,11,12]]
-        sparsity_stages = [50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
+    # if "bw" in pruning_type:
+    #     pruning_layers = [[0,1],[2,3],[4,5,6],[7,8,9],[10,11,12]]
+    #     sparsity_stages = [25, 40, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
+    # if "twvw" in pruning_type:
+    #     pruning_layers = [[0,1],[2,3],[4,5,6],[7,8,9],[10,11,12]]
+    #     sparsity_stages = [50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96]
 
     if args.arch == 'resnet18':
         base_threshold = 69.768
@@ -279,37 +279,46 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
             [25,26,27,28,29,30,31,32,33,34,35,36],
             [37,38,39,40,41,42,43,44,45,46,47,48],
         ]
-    sparsity_stages = [25,  50,  60,  65,  70,   75,  80, 85,  90, 92, 94, 96]
-    threshold_stages = [0.0, 0.2, 0.4, 0.6,  0.8, 1.0, 1.0, 1.5, 3.0, 100, 100, 100]
+    sparsity_stages = [25, 50, 60, 65, 70, 75, 80, 85, 90, 92, 94, 96, 98]  
+    # tmp_sparsity_stages = []
+    # for spar in sparsity_stages:
+    #     if(spar<target_sparsity):
+    #         tmp_sparsity_stages.append(spar)
+    #     elif spar>target_sparsity:
+    #         tmp_sparsity_stages.append(target_sparsity)
+    #         break
+    # sparsity_stages = tmp_sparsity_stages
+    
+    threshold_stages = [0.0, 0.2, 0.4, 0.6,  0.8, 1.0, 1.0, 1.5, 3.0, 100, 100, 100, 100]
     early_stop = [100, 100, 100, 100, 100, 100]
 
-    # print('First Evaluation')
-    # prec1, prec5 = validate(val_loader, model, criterion, args.print_freq)
-    # print("First Evaluation results: %f/%f" % (prec1, prec5))
-    # print('Done First Evaluation')
+
+    print('First Evaluation before Pruning')
+    prec1, prec5 = validate(val_loader, model, criterion, args.print_freq)
+    print("First Evaluation results: %f/%f" % (prec1, prec5))
+    print('Done First Evaluation\n')
 
     ## Multi stages to prune the CNN model
-    for stage in range(len(sparsity_stages)):
-        stage_dir = model_dir / ("sparsity_stage_" + str(sparsity_stages[stage]))
-        sparsity = sparsity_stages[stage]
-        threshold = base_threshold - threshold_stages[stage]
+    for prune_stage in range(len(sparsity_stages)):
+        stage_dir = model_dir / ("sparsity_stage_" + str(sparsity_stages[prune_stage]))
+        sparsity = sparsity_stages[prune_stage]
+        threshold = base_threshold - threshold_stages[prune_stage]
 
-        print("Stage : %d, Sparsity : %f, Finetune_steps : %d" %(stage, sparsity, finetune_steps))
-        print("Early_stop:")
-        print(early_stop)
+        print("Prune_Stage: %d, Sparsity: %f, Finetune_steps: %d" %(prune_stage, sparsity, finetune_steps))
+        print("Early_stop:", early_stop)
 
-        epoch = 0
+        
         all_layer_dir = stage_dir / "all_layers"
         masks_dir = all_layer_dir / "masks"
         os.makedirs(masks_dir)
 
-        print('Prune !')
+        # print('Start Pruning !')
         for layer in range(len(pruning_layers)):
             masks_now = pruning_layers[layer]
-            update_mask(model, sparsity, pruning_type, masks_now)
-        print('Done Prune !!!\n')
-        input()
-        pruning_info(model)
+            update_mask(sparsity, tile_size, model, pruning_type, masks_now)
+        # print('Done Pruning !!!\n')
+        
+        epoch = 0 # epoch is just used for counting 
         for _ in range(6):
             print('Mini Fine Tune !')
             # train for one epoch
@@ -333,6 +342,7 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
             }, False, all_layer_dir/('ckpt_' + str(sparsity) + '.pth'))
             previous_checkpoint = all_layer_dir/('ckpt_' + str(sparsity) + '.pth')
             previous_mask_values = copy.deepcopy(dump_mask(model))
+            epoch+=1
 
             if prec1 > threshold:
                 print('GOOD CHECKPOINT!!!\n')
@@ -346,17 +356,17 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
             pruning_info(model)
 
         assert(previous_checkpoint)
-        print("=> loading checkpoint '{}'".format(previous_checkpoint))
+        # print("=> loading checkpoint '{}'".format(previous_checkpoint))
         checkpoint = torch.load(previous_checkpoint)
         args.start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        print("=> loaded checkpoint '{}' (epoch {})".format(previous_checkpoint, checkpoint['epoch']))
+        # print("=> loaded checkpoint '{}' (epoch {})".format(previous_checkpoint, checkpoint['epoch']))
         load_mask(model, previous_mask_values)
 
-        print('Fine Tune !')
+        # print('Fine Tune !')
         train(train_loader, model, criterion, optimizer, epoch, args.print_freq, stop_step = finetune_steps)
-        print('Done Fine Tune !!!\n')
+        # print('Done Fine Tune !!!\n')
 
         print('Last Evaluation !!!')
         prec1, prec5 = validate(val_loader, model, criterion, args.print_freq)
@@ -377,4 +387,7 @@ def prune(val_loader, train_loader, model, optimizer, criterion, print_freq):
     return prec1, prec5
 
 if __name__ == '__main__':
-    get_accuracy()
+    start_time = time.time()
+    get_accuracy(99, 32)
+    print("{}".format(time.time()-start_time))
+

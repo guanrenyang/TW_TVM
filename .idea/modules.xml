@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/TileSparsity_TVM.iml" filepath="$PROJECT_DIR$/.idea/TileSparsity_TVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TileSparsity_TVM2.iml" filepath="$PROJECT_DIR$/.idea/TileSparsity_TVM2.iml" />
     </modules>
   </component>
 </project>

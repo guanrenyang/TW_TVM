@@ -163,11 +163,12 @@ def tiled_wise_1d(accumulated_scores, sparsity, granularity = 64):
             split_score.append(score[:,block_num * granularity:score.shape[1]])
         
         split_l2_norm = [ np.linalg.norm(w, axis=1) / w.shape[1] for w in split_score ]
-        l2_norm_list.append(split_l2_norm)
+        l2_norm_list.append( )
         split_score_list.append(split_score)
         
     
     split_layer_l2_norm_list = [ v for n in l2_norm_list for v in n]
+
     split_weight_l2_norm_list = [ v for n in split_layer_l2_norm_list for v in n]
     threshold = np.percentile(split_weight_l2_norm_list, sparsity)
     

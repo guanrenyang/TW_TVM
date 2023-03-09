@@ -2,34 +2,17 @@ import tvm
 import tvm.testing
 from tvm import te, auto_scheduler
 import numpy as np
-import random
-
-from extern_func import insert_row_to_C_kernel_tir  
+import random, os, json, math
+# Some error occur when using relative import
+from .extern_func import insert_row_to_C_kernel_tir  
 
 is_resume = False
 is_tune = True
-ansor_num_trials = 1000
-ansor_verbose = 1
-# # N_pruned is the number of remaining entries in N dimension
-# # TODO: change K_pruned to a layer-wise configuration
-# big_test = True
-# dtype = 'float32'
-# if big_test:
-#     '''test for accuracy'''
-#     M = 1024
-#     N = 1024
-#     K = 1024
-#     tile_size = 32
-#     K_pruned_max = 512
-#     N_pruned_global = 1024
-# else:
-#     '''test for visualization'''
-#     M = 16
-#     N = 16
-#     K = 16
-#     tile_size =  2
-#     K_pruned_max = 8
-#     N_pruned_global = 8
+ansor_num_trials = 2000
+ansor_verbose = 0
+root_dir = "/home/ryguan/TileSparsity_TVM/AutoSchedule/Outputs/"
+latency_lookUpTable_dir =  os.path.join(root_dir, 'latency_lookup_table.json')
+
 @auto_scheduler.register_workload
 def tw_kernel(M, K, K_pruned_max, tile_size, block_num, dtype):
 
@@ -45,8 +28,39 @@ def tw_kernel(M, K, K_pruned_max, tile_size, block_num, dtype):
 
     return [C_transposed_skipped, A_transposed, B_transposed_packed, mask_k]
     
+def add_to_lookUpTable(tile_size:int, sparsity:int, execution_time_list: list):
+    tile_size = str(tile_size)
+    sparsity = str(sparsity)
+    execution_time_list = (execution_time_list)
 
-def get_execution_time(M, N, K, tile_size, K_pruned_max, N_pruned_global, dtype, target_name:str):
+    with open(latency_lookUpTable_dir, 'r') as latency_log:
+        latency_log_content = latency_log.read()
+
+    latency_dict = json.loads(latency_log_content) if latency_log_content != '' else {}
+    latency_dict[tile_size] = latency_dict.get(tile_size, {})
+    latency_dict[tile_size][sparsity] = execution_time_list
+
+    with open(latency_lookUpTable_dir, 'w') as latency_log:
+        latency_log.write(json.dumps(latency_dict))
+
+def read_from_lookUpTable(tile_size:int, sparsity: int):
+    tile_size = str(tile_size)
+    sparsity = str(sparsity)
+    with open(latency_lookUpTable_dir, 'r') as latency_log:
+        latency_log_content = latency_log.read()
+
+    latency_dict = json.loads(latency_log_content) if latency_log_content != '' else {}
+    if tile_size in latency_dict and sparsity in latency_dict[tile_size]:
+        return latency_dict[tile_size][sparsity][0]+latency_dict[tile_size][sparsity][1]
+    return None
+def get_execution_time(sparsity: int, tile_size: int, M, N, K, N_pruned_global, dtype, target_name:str):
+    
+    # read from latency look up table
+    execution_time = read_from_lookUpTable(tile_size, sparsity)
+    if execution_time != None:
+        return execution_time
+
+    K_pruned_max = math.floor(sparsity/100 * K)
     block_num = (N_pruned_global + tile_size - 1)//tile_size
     N_ori_per_block = N // block_num
         
@@ -57,7 +71,7 @@ def get_execution_time(M, N, K, tile_size, K_pruned_max, N_pruned_global, dtype,
         mask_k_test[row, :] = np.random.choice(K, K_pruned_max, replace=False)
     mask_k_test.sort(axis=1)
 
-    # create search task
+    # create search taske
     if target_name in ['cuda', 'gpu']:
         target = tvm.target.cuda(arch='sm_70')
         device = tvm.device(target.get_target_device_type(), 0)
@@ -68,37 +82,35 @@ def get_execution_time(M, N, K, tile_size, K_pruned_max, N_pruned_global, dtype,
     task = tvm.auto_scheduler.SearchTask(func=tw_kernel, args=(M, K, K_pruned_max, tile_size, block_num, dtype), target=target, 
                                         task_inputs={'mask_k': tvm.runtime.ndarray.array(mask_k_test)}, task_inputs_overwrite=True)
 
-    # Inspect the computational graph
-    # print("Computational DAG:")
-    # print(task.compute_dag)
-
     # Set parameters for auto_scheduler
-    log_file = "./AnsorOutputs/tw_{M}_{N}_{K}_ts{tile_size}_{K_pruned_max}_{N_pruned_global}_{dtype}_{target_name}_trails{trails}.json".format(M=M, N=N, K=K, tile_size=tile_size, K_pruned_max=K_pruned_max, N_pruned_global=N_pruned_global, dtype=dtype, target_name=target_name, trails=ansor_num_trials)
-    tune_option = auto_scheduler.TuningOptions(
-        num_measure_trials=ansor_num_trials,
-        measure_callbacks=[auto_scheduler.RecordToFile(log_file)],
-        verbose=ansor_verbose,
-    )
-    cost_model = auto_scheduler.XGBModel()
-    if is_resume:
-        cost_model.update_from_file(log_file)
-
-    if is_resume:
-        search_policy = auto_scheduler.SketchPolicy(
-            task,
-            program_cost_model=cost_model,
-            init_search_callbacks=[
-                auto_scheduler.PreloadMeasuredStates(log_file)
-            ],
+    log_file = os.path.join(root_dir, "Ansor/tw_{M}_{N}_{K}_ts{tile_size}_spar{sparsity}_{N_pruned_global}_{dtype}_{target_name}_trails{trails}.json".format(\
+        M=M, N=N, K=K, tile_size=tile_size, sparsity=sparsity,N_pruned_global=N_pruned_global, dtype=dtype, target_name=target_name, trails=ansor_num_trials))
+    if is_tune:
+        tune_option = auto_scheduler.TuningOptions(
+            num_measure_trials=ansor_num_trials,
+            measure_callbacks=[auto_scheduler.RecordToFile(log_file)],
+            verbose=ansor_verbose,
         )
-    else:
-        search_policy = auto_scheduler.SketchPolicy(
-            task,
-            program_cost_model=cost_model,
-        )
+        cost_model = auto_scheduler.XGBModel()
+        if is_resume:
+            cost_model.update_from_file(log_file)
 
-    # Run auto-tuning (search)
-    task.tune(tune_option, search_policy=search_policy)
+        if is_resume:
+            search_policy = auto_scheduler.SketchPolicy(
+                task,
+                program_cost_model=cost_model,
+                init_search_callbacks=[
+                    auto_scheduler.PreloadMeasuredStates(log_file)
+                ],
+            )
+        else:
+            search_policy = auto_scheduler.SketchPolicy(
+                task,
+                program_cost_model=cost_model,
+            )
+
+        # Run auto-tuning (search)
+        task.tune(tune_option, search_policy=search_policy)
 
     # Apply the best schedule
     sch_tw_mainbody, args_tw_mainbody = task.apply_best(log_file)
@@ -160,6 +172,16 @@ def get_execution_time(M, N, K, tile_size, K_pruned_max, N_pruned_global, dtype,
 
     print("\tExecution time of tw_mainbody: %.3f ms" % (tw_mainbody_execution_time))
     print("\tExecution time of tw_coowrite_C: %.3f ms" % (tw_coowrite_C_execution_time))
+    
+    add_to_lookUpTable(tile_size, sparsity, [tw_mainbody_execution_time, tw_coowrite_C_execution_time])
 
-    return tw_mainbody_execution_time, tw_coowrite_C_execution_time
+    if is_tune==False:
+        print('\nCUDA Code of tw_mainbody is\n')
+        print(tw_mainbody.imported_modules[0].get_source())
+
+    return tw_mainbody_execution_time+tw_coowrite_C_execution_time
     # print(tw_mainbody.imported_modules[0].get_source())
+
+
+if __name__=='__main__':
+    get_execution_time(75, 256, 1024, 1024, 1024, 1024, 'float32', 'gpu')

@@ -4,6 +4,13 @@ from tvm.script import ir as I
 from tvm.script import tir as T
 import numpy as np
 from tvm import te
+from tvm import meta_schedule as ms
+from .tir_sparse_runner import sparse_fixed_runner
+from tvm.meta_schedule.runner.local_runner import LocalRunner
+import os
+root_dir = "/home/ryguan/TileSparsity_TVM/AutoSchedule/Outputs/MetaScheduler/"
+is_tune = True
+num_trails = 1000
 
 def insert_row_to_C_kernel_te(M, N, tile_size, block_num, dtype='float32'):
     C_transposed_skipped = te.placeholder((block_num, tile_size, M), name='C_transposed_skipped', dtype=dtype)
@@ -64,10 +71,11 @@ def is_power_of_two(n: int):
     if n&(n-1)==0:
         return True
     return False
+
 def insert_row_to_C_kernel_tir(M, N, tile_size, block_num, dtype='float32', target_name='cpu'):
     N_ori_per_block = N // block_num
     cuda = True if target_name in ['gpu', 'cuda'] else False
-
+    
     @I.ir_module
     class CPUModule:
         @T.prim_func
@@ -106,14 +114,6 @@ def insert_row_to_C_kernel_tir(M, N, tile_size, block_num, dtype='float32', targ
         ir_module = GPUModule
         sch = tvm.tir.Schedule(ir_module)
 
-        # block_a = sch.get_block('A')
-        # (n, m) = sch.get_loops(block_a)
-        # no, ni = sch.split(n, [N//32, 32])
-        # mo, mi = sch.split(m, [M//32, 32])
-        # sch.bind(no, 'blockIdx.x')
-        # sch.bind(mo, 'blockIdx.y')
-        # sch.bind(ni, 'threadIdx.x')
-        # sch.bind(mi, 'threadIdx.y')
         
         block_b = sch.get_block('B')
         (bn, ts, m) = sch.get_loops(block_b)
@@ -129,15 +129,41 @@ def insert_row_to_C_kernel_tir(M, N, tile_size, block_num, dtype='float32', targ
         sch.bind(bn, 'blockIdx.x')
         sch.bind(ts, 'threadIdx.y')
         sch.bind(mi, 'threadIdx.x')
+        if is_tune:
+            sprunner=sparse_fixed_runner(block_num, tile_size, N)
+            database_tuned = ms.tune_tir(
+                mod=sch.mod,
+                target="cuda  -max_threads_per_block=1024 -max_shared_memory_per_block=65536",
+                max_trials_global=num_trails,
+                num_trials_per_iter=64,
+                work_dir=os.path.join(root_dir, "bn_{bn}_ts_{ts}_N_{N}".format(bn=block_num, ts=tile_size, N=N)),
+                task_name="main",
+                runner=sprunner
+            )
+            sch = ms.tir_integration.compile_tir(database_tuned, sch.mod, "cuda  -max_threads_per_block=1024 -max_shared_memory_per_block=65536")
 
-    
     func = tvm.build(sch.mod, target=('cuda' if cuda else 'llvm'))
     return func
 
 
-# sch, args = insert_row_to_C_kernel(2048, 1024, 128, 8, 'float32')
-# ir_module = tvm.lower(sch, args, simple_mode=True)
-# print(ir_module.script()) 
+# M, N, K = 1024, 1024, 1024
+# dtype='float32'
+# tile_size = 128
+# block_num = N//tile_size
+# N_ori_per_block = N//tile_size
+# @I.ir_module
+# class GPUModule:
+#     @T.prim_func
+#     def main(C_transposed_h: T.handle, C_transposed_skipped_h: T.handle, mask_n_h: T.handle):
+#         T.func_attr({"global_symbol": "main", "tir.noalias": True})
+#         C_transposed = T.match_buffer(C_transposed_h, (N, M), dtype)
+#         C_transposed_skipped = T.match_buffer(C_transposed_skipped_h, (block_num, tile_size, M), dtype)
+#         mask_n = T.match_buffer(mask_n_h, (block_num, tile_size), 'int32')
 
+#         for bn, ts, col in T.grid(block_num, tile_size, M):
+#             with T.block('B'):
+#                 with T.init():
+#                     C_transposed[(N_ori_per_block * bn + mask_n[bn, ts]), col] = T.float32(0)
+#                 C_transposed[(N_ori_per_block * bn + mask_n[bn, ts]), col] += C_transposed_skipped[bn, ts, col]
 
 

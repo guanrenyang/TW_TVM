@@ -26,7 +26,7 @@ class AverageMeter(object):
         self.val = val
         self.sum += val * n
         self.count += n
-        self.avg = self.sum / self.count
+        self.avg = self.sum /self.count
 
 
 def accuracy(output, target, topk=(1,)):
@@ -90,11 +90,11 @@ def pruning_info(model):
             non_zero = np.sum(mask)
 
             print("  %d %s   " %(id, name), end="\t")
-            print("    %d" %(len(mask) - non_zero), end="\t")
-            print("    %d" %(non_zero), end="\t")
-            print("    %d" %(len(mask)), end="\t")
-            print("    %f" %(non_zero/len(mask)), end="\t")
-            print(mask.shape, end="\t")
+            # print("    %d" %(len(mask) - non_zero), end="\t")
+            # print("    %d" %(non_zero), end="\t")
+            # print("    %d" %(len(mask)), end="\t")
+            print("density: %f" %(non_zero/len(mask)), end="\t")
+            print("mask.shape: ", mask.shape, end="\t")
             print()
 
             non_zeros += non_zero
@@ -127,7 +127,7 @@ import numpy as np
 #     return transformation_matrix
 
 
-def update_mask(model, sparsity, pruning_type, masks_now = None):
+def update_mask(sparsity, tile_size, model, pruning_type, masks_now = None):
     id = 0
     scores = []
     names = []
@@ -138,7 +138,7 @@ def update_mask(model, sparsity, pruning_type, masks_now = None):
             id += 1
     
     new_accumulated_scores = pruning_algo.img2col_forward(scores)
-    new_mask_values = pruning_algo.pruning_fun(pruning_type)(new_accumulated_scores, sparsity)
+    new_mask_values = pruning_algo.pruning_fun(pruning_type)(new_accumulated_scores, sparsity, tile_size)
     new_mask_values = pruning_algo.img2col_back_ward(new_mask_values, scores) 
 
     mask_id = 0
