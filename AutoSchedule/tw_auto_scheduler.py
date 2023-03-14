@@ -12,8 +12,11 @@ ansor_num_trials = 2000
 ansor_verbose = 0
 root_dir = "/home/ryguan/TileSparsity_TVM/AutoSchedule/Outputs/"
 latency_lookUpTable_dir =  os.path.join(root_dir, 'latency_lookup_table.json')
-np.random.seed(100)
+np.random.seed(10)
 
+if os.path.exists(latency_lookUpTable_dir)==False:
+    open(latency_lookUpTable_dir, 'a').close()
+    
 @auto_scheduler.register_workload
 def tw_kernel(M, K, K_pruned_max, tile_size, block_num, dtype):
 
