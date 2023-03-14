@@ -1,1 +1,4 @@
 Settings: grid_tw1_1024_1024_1024_float32_gpu
+Search Task[3234/1] Time 225.000s Tile_size 2, Sparsity 50, Platform gpu, ExecutionTime 0.672, l2NormRatio 1.146
+Search Task[3261/1] Time 225.000s Tile_size 2, Sparsity 52, Platform gpu, ExecutionTime 0.661, l2NormRatio 1.161
+Search Task[3278/1] Time 225.000s Tile_size 2, Sparsity 54, Platform gpu, ExecutionTime 0.707, l2NormRatio 1.177

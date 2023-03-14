@@ -1,0 +1,172 @@
+Settings: grid_tw1_1024_1024_1024_float32_gpu
+Search Task[1/90] Time 3366.917s Tile_size 2, Sparsity 50, Platform gpu, ExecutionTime 0.656, l2NormRatio 1.146
+Search Task[2/90] Time 3205.052s Tile_size 2, Sparsity 55, Platform gpu, ExecutionTime 0.572, l2NormRatio 1.186
+Search Task[3/90] Time 2425.488s Tile_size 2, Sparsity 60, Platform gpu, ExecutionTime 0.609, l2NormRatio 1.235
+Search Task[4/90] Time 2651.982s Tile_size 2, Sparsity 65, Platform gpu, ExecutionTime 0.302, l2NormRatio 1.295
+Search Task[5/90] Time 2694.181s Tile_size 2, Sparsity 70, Platform gpu, ExecutionTime 0.263, l2NormRatio 1.371
+Search Task[6/90] Time 3149.667s Tile_size 2, Sparsity 75, Platform gpu, ExecutionTime 0.217, l2NormRatio 1.470
+	 Find an efficient Kernel, tile_size=2, sparsity=75, exec_time=0.2165153236382019
+Search Task[7/90] Time 3271.636s Tile_size 2, Sparsity 80, Platform gpu, ExecutionTime 0.186, l2NormRatio 1.604
+	 Find an efficient Kernel, tile_size=2, sparsity=80, exec_time=0.18550279506360662
+Search Task[8/90] Time 3012.654s Tile_size 2, Sparsity 85, Platform gpu, ExecutionTime 0.146, l2NormRatio 1.799
+	 Find an efficient Kernel, tile_size=2, sparsity=85, exec_time=0.14570530249689626
+Search Task[9/90] Time 3135.024s Tile_size 2, Sparsity 90, Platform gpu, ExecutionTime 0.105, l2NormRatio 2.128
+	 Find an efficient Kernel, tile_size=2, sparsity=90, exec_time=0.10459958325309718
+Search Task[10/90] Time 2934.144s Tile_size 2, Sparsity 95, Platform gpu, ExecutionTime 0.059, l2NormRatio 2.876
+	 Find an efficient Kernel, tile_size=2, sparsity=95, exec_time=0.05867247080963958
+Search Task[11/90] Time 3079.655s Tile_size 4, Sparsity 50, Platform gpu, ExecutionTime 0.236, l2NormRatio 1.212
+Search Task[12/90] Time 3044.412s Tile_size 4, Sparsity 55, Platform gpu, ExecutionTime 0.214, l2NormRatio 1.259
+	 Find an efficient Kernel, tile_size=4, sparsity=55, exec_time=0.21403311416555548
+Search Task[13/90] Time 2567.218s Tile_size 4, Sparsity 60, Platform gpu, ExecutionTime 0.257, l2NormRatio 1.316
+Search Task[14/90] Time 2796.393s Tile_size 4, Sparsity 65, Platform gpu, ExecutionTime 0.174, l2NormRatio 1.385
+	 Find an efficient Kernel, tile_size=4, sparsity=65, exec_time=0.17383812108077082
+Search Task[15/90] Time 2674.895s Tile_size 4, Sparsity 70, Platform gpu, ExecutionTime 0.189, l2NormRatio 1.472
+	 Find an efficient Kernel, tile_size=4, sparsity=70, exec_time=0.18857056667638852
+Search Task[16/90] Time 3123.964s Tile_size 4, Sparsity 75, Platform gpu, ExecutionTime 0.131, l2NormRatio 1.584
+	 Find an efficient Kernel, tile_size=4, sparsity=75, exec_time=0.13093659978660177
+Search Task[17/90] Time 3144.352s Tile_size 4, Sparsity 80, Platform gpu, ExecutionTime 0.112, l2NormRatio 1.737
+	 Find an efficient Kernel, tile_size=4, sparsity=80, exec_time=0.11151554075523783
+Search Task[18/90] Time 2969.908s Tile_size 4, Sparsity 85, Platform gpu, ExecutionTime 0.093, l2NormRatio 1.961
+	 Find an efficient Kernel, tile_size=4, sparsity=85, exec_time=0.09283838480671451
+Search Task[19/90] Time 2975.685s Tile_size 4, Sparsity 90, Platform gpu, ExecutionTime 0.065, l2NormRatio 2.336
+	 Find an efficient Kernel, tile_size=4, sparsity=90, exec_time=0.06475004926656214
+Search Task[20/90] Time 2823.034s Tile_size 4, Sparsity 95, Platform gpu, ExecutionTime 0.041, l2NormRatio 3.176
+	 Find an efficient Kernel, tile_size=4, sparsity=95, exec_time=0.04070908598165145
+Search Task[21/90] Time 3028.899s Tile_size 8, Sparsity 50, Platform gpu, ExecutionTime 0.164, l2NormRatio 1.263
+	 Find an efficient Kernel, tile_size=8, sparsity=50, exec_time=0.1638678205897712
+Search Task[22/90] Time 2993.802s Tile_size 8, Sparsity 55, Platform gpu, ExecutionTime 0.151, l2NormRatio 1.317
+	 Find an efficient Kernel, tile_size=8, sparsity=55, exec_time=0.15083077878095108
+Search Task[23/90] Time 2656.009s Tile_size 8, Sparsity 60, Platform gpu, ExecutionTime 0.220, l2NormRatio 1.381
+Search Task[24/90] Time 2792.900s Tile_size 8, Sparsity 65, Platform gpu, ExecutionTime 0.151, l2NormRatio 1.459
+	 Find an efficient Kernel, tile_size=8, sparsity=65, exec_time=0.15071786975068505
+Search Task[25/90] Time 2699.472s Tile_size 8, Sparsity 70, Platform gpu, ExecutionTime 0.166, l2NormRatio 1.557
+	 Find an efficient Kernel, tile_size=8, sparsity=70, exec_time=0.1655994492224203
+Search Task[26/90] Time 3060.578s Tile_size 8, Sparsity 75, Platform gpu, ExecutionTime 0.093, l2NormRatio 1.682
+	 Find an efficient Kernel, tile_size=8, sparsity=75, exec_time=0.0926114890802143
+Search Task[27/90] Time 3002.046s Tile_size 8, Sparsity 80, Platform gpu, ExecutionTime 0.079, l2NormRatio 1.852
+	 Find an efficient Kernel, tile_size=8, sparsity=80, exec_time=0.07906465988314938
+Search Task[28/90] Time 3018.373s Tile_size 8, Sparsity 85, Platform gpu, ExecutionTime 0.062, l2NormRatio 2.100
+	 Find an efficient Kernel, tile_size=8, sparsity=85, exec_time=0.06239438108964177
+Search Task[29/90] Time 2982.570s Tile_size 8, Sparsity 90, Platform gpu, ExecutionTime 0.052, l2NormRatio 2.516
+	 Find an efficient Kernel, tile_size=8, sparsity=90, exec_time=0.05163752035450853
+Search Task[30/90] Time 2967.713s Tile_size 8, Sparsity 95, Platform gpu, ExecutionTime 0.036, l2NormRatio 3.445
+	 Find an efficient Kernel, tile_size=8, sparsity=95, exec_time=0.03559299342662073
+Search Task[31/90] Time 3031.180s Tile_size 16, Sparsity 50, Platform gpu, ExecutionTime 0.137, l2NormRatio 1.302
+	 Find an efficient Kernel, tile_size=16, sparsity=50, exec_time=0.13651248495031407
+Search Task[32/90] Time 3093.931s Tile_size 16, Sparsity 55, Platform gpu, ExecutionTime 0.125, l2NormRatio 1.362
+	 Find an efficient Kernel, tile_size=16, sparsity=55, exec_time=0.12483053569036515
+Search Task[33/90] Time 2856.390s Tile_size 16, Sparsity 60, Platform gpu, ExecutionTime 0.200, l2NormRatio 1.433
+	 Find an efficient Kernel, tile_size=16, sparsity=60, exec_time=0.19950977640862064
+Search Task[34/90] Time 2825.215s Tile_size 16, Sparsity 65, Platform gpu, ExecutionTime 0.141, l2NormRatio 1.518
+	 Find an efficient Kernel, tile_size=16, sparsity=65, exec_time=0.140693208387185
+Search Task[35/90] Time 2706.827s Tile_size 16, Sparsity 70, Platform gpu, ExecutionTime 0.167, l2NormRatio 1.624
+	 Find an efficient Kernel, tile_size=16, sparsity=70, exec_time=0.16657548732251615
+Search Task[36/90] Time 2903.232s Tile_size 16, Sparsity 75, Platform gpu, ExecutionTime 0.081, l2NormRatio 1.761
+	 Find an efficient Kernel, tile_size=16, sparsity=75, exec_time=0.08072769546877492
+Search Task[37/90] Time 2951.378s Tile_size 16, Sparsity 80, Platform gpu, ExecutionTime 0.066, l2NormRatio 1.946
+	 Find an efficient Kernel, tile_size=16, sparsity=80, exec_time=0.0656432375483037
+Search Task[38/90] Time 3034.321s Tile_size 16, Sparsity 85, Platform gpu, ExecutionTime 0.059, l2NormRatio 2.216
+	 Find an efficient Kernel, tile_size=16, sparsity=85, exec_time=0.05885844925310822
+Search Task[39/90] Time 2950.175s Tile_size 16, Sparsity 90, Platform gpu, ExecutionTime 0.048, l2NormRatio 2.667
+	 Find an efficient Kernel, tile_size=16, sparsity=90, exec_time=0.04751891255090836
+Search Task[40/90] Time 2904.974s Tile_size 16, Sparsity 95, Platform gpu, ExecutionTime 0.033, l2NormRatio 3.673
+	 Find an efficient Kernel, tile_size=16, sparsity=95, exec_time=0.033387413164407694
+Search Task[41/90] Time 2979.101s Tile_size 32, Sparsity 50, Platform gpu, ExecutionTime 0.140, l2NormRatio 1.332
+	 Find an efficient Kernel, tile_size=32, sparsity=50, exec_time=0.13958191459383054
+Search Task[42/90] Time 3091.487s Tile_size 32, Sparsity 55, Platform gpu, ExecutionTime 0.118, l2NormRatio 1.396
+	 Find an efficient Kernel, tile_size=32, sparsity=55, exec_time=0.11840238383110739
+Search Task[43/90] Time 2922.014s Tile_size 32, Sparsity 60, Platform gpu, ExecutionTime 0.211, l2NormRatio 1.472
+	 Find an efficient Kernel, tile_size=32, sparsity=60, exec_time=0.21097044728465017
+Search Task[44/90] Time 2914.495s Tile_size 32, Sparsity 65, Platform gpu, ExecutionTime 0.139, l2NormRatio 1.563
+	 Find an efficient Kernel, tile_size=32, sparsity=65, exec_time=0.13874834763347246
+Search Task[45/90] Time 2850.871s Tile_size 32, Sparsity 70, Platform gpu, ExecutionTime 0.176, l2NormRatio 1.676
+	 Find an efficient Kernel, tile_size=32, sparsity=70, exec_time=0.17555334144876505
+Search Task[46/90] Time 3069.366s Tile_size 32, Sparsity 75, Platform gpu, ExecutionTime 0.072, l2NormRatio 1.822
+	 Find an efficient Kernel, tile_size=32, sparsity=75, exec_time=0.07222233512499698
+Search Task[47/90] Time 2980.345s Tile_size 32, Sparsity 80, Platform gpu, ExecutionTime 0.065, l2NormRatio 2.019
+	 Find an efficient Kernel, tile_size=32, sparsity=80, exec_time=0.0647609951978464
+Search Task[48/90] Time 3016.693s Tile_size 32, Sparsity 85, Platform gpu, ExecutionTime 0.058, l2NormRatio 2.307
+	 Find an efficient Kernel, tile_size=32, sparsity=85, exec_time=0.0577587250294939
+Search Task[49/90] Time 2947.187s Tile_size 32, Sparsity 90, Platform gpu, ExecutionTime 0.047, l2NormRatio 2.788
+	 Find an efficient Kernel, tile_size=32, sparsity=90, exec_time=0.04666059498568145
+Search Task[50/90] Time 3039.855s Tile_size 32, Sparsity 95, Platform gpu, ExecutionTime 0.032, l2NormRatio 3.864
+	 Find an efficient Kernel, tile_size=32, sparsity=95, exec_time=0.0316893184977336
+Search Task[51/90] Time 3017.378s Tile_size 64, Sparsity 50, Platform gpu, ExecutionTime 0.124, l2NormRatio 1.355
+	 Find an efficient Kernel, tile_size=64, sparsity=50, exec_time=0.12446869272534293
+Search Task[52/90] Time 3084.891s Tile_size 64, Sparsity 55, Platform gpu, ExecutionTime 0.126, l2NormRatio 1.422
+	 Find an efficient Kernel, tile_size=64, sparsity=55, exec_time=0.12578536728726755
+Search Task[53/90] Time 2920.525s Tile_size 64, Sparsity 60, Platform gpu, ExecutionTime 0.208, l2NormRatio 1.501
+	 Find an efficient Kernel, tile_size=64, sparsity=60, exec_time=0.20776661235379756
+Search Task[54/90] Time 2951.431s Tile_size 64, Sparsity 65, Platform gpu, ExecutionTime 0.143, l2NormRatio 1.597
+	 Find an efficient Kernel, tile_size=64, sparsity=65, exec_time=0.14348480771363392
+Search Task[55/90] Time 2896.634s Tile_size 64, Sparsity 70, Platform gpu, ExecutionTime 0.172, l2NormRatio 1.717
+	 Find an efficient Kernel, tile_size=64, sparsity=70, exec_time=0.1720350080093766
+Search Task[56/90] Time 2986.302s Tile_size 64, Sparsity 75, Platform gpu, ExecutionTime 0.080, l2NormRatio 1.870
+	 Find an efficient Kernel, tile_size=64, sparsity=75, exec_time=0.07954252640584707
+Search Task[57/90] Time 3052.253s Tile_size 64, Sparsity 80, Platform gpu, ExecutionTime 0.070, l2NormRatio 2.076
+	 Find an efficient Kernel, tile_size=64, sparsity=80, exec_time=0.06995381409319115
+Search Task[58/90] Time 3174.103s Tile_size 64, Sparsity 85, Platform gpu, ExecutionTime 0.059, l2NormRatio 2.380
+	 Find an efficient Kernel, tile_size=64, sparsity=85, exec_time=0.05898861923274325
+Search Task[59/90] Time 3067.864s Tile_size 64, Sparsity 90, Platform gpu, ExecutionTime 0.049, l2NormRatio 2.886
+	 Find an efficient Kernel, tile_size=64, sparsity=90, exec_time=0.04885813677068239
+Search Task[60/90] Time 3210.891s Tile_size 64, Sparsity 95, Platform gpu, ExecutionTime 0.034, l2NormRatio 4.022
+	 Find an efficient Kernel, tile_size=64, sparsity=95, exec_time=0.033515304934724766
+Search Task[61/90] Time 3024.627s Tile_size 128, Sparsity 50, Platform gpu, ExecutionTime 0.134, l2NormRatio 1.371
+	 Find an efficient Kernel, tile_size=128, sparsity=50, exec_time=0.13407085880369163
+Search Task[62/90] Time 3092.536s Tile_size 128, Sparsity 55, Platform gpu, ExecutionTime 0.121, l2NormRatio 1.441
+	 Find an efficient Kernel, tile_size=128, sparsity=55, exec_time=0.12105511431423593
+Search Task[63/90] Time 2997.883s Tile_size 128, Sparsity 60, Platform gpu, ExecutionTime 0.227, l2NormRatio 1.523
+Search Task[64/90] Time 2972.524s Tile_size 128, Sparsity 65, Platform gpu, ExecutionTime 0.152, l2NormRatio 1.623
+	 Find an efficient Kernel, tile_size=128, sparsity=65, exec_time=0.1522505461026961
+Search Task[65/90] Time 2973.008s Tile_size 128, Sparsity 70, Platform gpu, ExecutionTime 0.170, l2NormRatio 1.746
+	 Find an efficient Kernel, tile_size=128, sparsity=70, exec_time=0.16970061098106223
+Search Task[66/90] Time 3089.715s Tile_size 128, Sparsity 75, Platform gpu, ExecutionTime 0.073, l2NormRatio 1.905
+	 Find an efficient Kernel, tile_size=128, sparsity=75, exec_time=0.0727332532581555
+Search Task[67/90] Time 3056.128s Tile_size 128, Sparsity 80, Platform gpu, ExecutionTime 0.071, l2NormRatio 2.120
+	 Find an efficient Kernel, tile_size=128, sparsity=80, exec_time=0.07071858728787535
+Search Task[68/90] Time 3207.539s Tile_size 128, Sparsity 85, Platform gpu, ExecutionTime 0.056, l2NormRatio 2.434
+	 Find an efficient Kernel, tile_size=128, sparsity=85, exec_time=0.055921064505228955
+Search Task[69/90] Time 3110.406s Tile_size 128, Sparsity 90, Platform gpu, ExecutionTime 0.045, l2NormRatio 2.958
+	 Find an efficient Kernel, tile_size=128, sparsity=90, exec_time=0.04454690944970565
+Search Task[70/90] Time 3198.789s Tile_size 128, Sparsity 95, Platform gpu, ExecutionTime 0.031, l2NormRatio 4.137
+	 Find an efficient Kernel, tile_size=128, sparsity=95, exec_time=0.0311743384557888
+Search Task[71/90] Time 3326.515s Tile_size 256, Sparsity 50, Platform gpu, ExecutionTime 0.135, l2NormRatio 1.384
+	 Find an efficient Kernel, tile_size=256, sparsity=50, exec_time=0.13490213695748962
+Search Task[72/90] Time 3046.072s Tile_size 256, Sparsity 55, Platform gpu, ExecutionTime 0.125, l2NormRatio 1.456
+	 Find an efficient Kernel, tile_size=256, sparsity=55, exec_time=0.12482262914170111
+Search Task[73/90] Time 2908.443s Tile_size 256, Sparsity 60, Platform gpu, ExecutionTime 0.219, l2NormRatio 1.540
+	 Find an efficient Kernel, tile_size=256, sparsity=60, exec_time=0.21918810070580322
+Search Task[74/90] Time 3004.049s Tile_size 256, Sparsity 65, Platform gpu, ExecutionTime 0.154, l2NormRatio 1.642
+	 Find an efficient Kernel, tile_size=256, sparsity=65, exec_time=0.15437990275260266
+Search Task[75/90] Time 2899.532s Tile_size 256, Sparsity 70, Platform gpu, ExecutionTime 0.180, l2NormRatio 1.769
+	 Find an efficient Kernel, tile_size=256, sparsity=70, exec_time=0.17993646018299927
+Search Task[76/90] Time 3075.067s Tile_size 256, Sparsity 75, Platform gpu, ExecutionTime 0.080, l2NormRatio 1.933
+	 Find an efficient Kernel, tile_size=256, sparsity=75, exec_time=0.07973404722361536
+Search Task[77/90] Time 3030.065s Tile_size 256, Sparsity 80, Platform gpu, ExecutionTime 0.070, l2NormRatio 2.154
+	 Find an efficient Kernel, tile_size=256, sparsity=80, exec_time=0.06965470287659516
+Search Task[78/90] Time 3135.178s Tile_size 256, Sparsity 85, Platform gpu, ExecutionTime 0.063, l2NormRatio 2.475
+	 Find an efficient Kernel, tile_size=256, sparsity=85, exec_time=0.06337605806160033
+Search Task[79/90] Time 3316.713s Tile_size 256, Sparsity 90, Platform gpu, ExecutionTime 0.048, l2NormRatio 3.016
+	 Find an efficient Kernel, tile_size=256, sparsity=90, exec_time=0.04773585536402061
+Search Task[80/90] Time 3106.954s Tile_size 256, Sparsity 95, Platform gpu, ExecutionTime 0.036, l2NormRatio 4.234
+	 Find an efficient Kernel, tile_size=256, sparsity=95, exec_time=0.0359723438125859
+Search Task[81/90] Time 3033.905s Tile_size 512, Sparsity 50, Platform gpu, ExecutionTime 0.141, l2NormRatio 1.393
+	 Find an efficient Kernel, tile_size=512, sparsity=50, exec_time=0.14080666452700566
+Search Task[82/90] Time 3092.434s Tile_size 512, Sparsity 55, Platform gpu, ExecutionTime 0.137, l2NormRatio 1.466
+	 Find an efficient Kernel, tile_size=512, sparsity=55, exec_time=0.13685895650495764
+Search Task[83/90] Time 2871.778s Tile_size 512, Sparsity 60, Platform gpu, ExecutionTime 0.236, l2NormRatio 1.552
+Search Task[84/90] Time 2901.121s Tile_size 512, Sparsity 65, Platform gpu, ExecutionTime 0.152, l2NormRatio 1.656
+	 Find an efficient Kernel, tile_size=512, sparsity=65, exec_time=0.1520108999366248
+Search Task[85/90] Time 2811.070s Tile_size 512, Sparsity 70, Platform gpu, ExecutionTime 0.187, l2NormRatio 1.785
+	 Find an efficient Kernel, tile_size=512, sparsity=70, exec_time=0.18745296213848933
+Search Task[86/90] Time 3077.616s Tile_size 512, Sparsity 75, Platform gpu, ExecutionTime 0.094, l2NormRatio 1.952
+	 Find an efficient Kernel, tile_size=512, sparsity=75, exec_time=0.0938700419665279
+Search Task[87/90] Time 3100.876s Tile_size 512, Sparsity 80, Platform gpu, ExecutionTime 0.175, l2NormRatio 2.176
+	 Find an efficient Kernel, tile_size=512, sparsity=80, exec_time=0.1754733623036458
+Search Task[88/90] Time 3183.970s Tile_size 512, Sparsity 85, Platform gpu, ExecutionTime 0.078, l2NormRatio 2.503
+	 Find an efficient Kernel, tile_size=512, sparsity=85, exec_time=0.07793016662840138
+Search Task[89/90] Time 3048.008s Tile_size 512, Sparsity 90, Platform gpu, ExecutionTime 0.062, l2NormRatio 3.056
+	 Find an efficient Kernel, tile_size=512, sparsity=90, exec_time=0.06191908851970875
+Search Task[90/90] Time 3037.435s Tile_size 512, Sparsity 95, Platform gpu, ExecutionTime 0.048, l2NormRatio 4.288
+	 Find an efficient Kernel, tile_size=512, sparsity=95, exec_time=0.04753494632639374
+Final Results: Tile_size 64, Sparsity 50, Platform gpu, ExecutionTime 0.124, l2NormRatio 1.355

@@ -61,8 +61,10 @@ def tw_grid_search(weight, pruning_type, M, N, K, N_pruned_global, dtype, target
             obj = object_function(l2_norm_ratio ,execution_time_ratio)
             
             add_to_log('Search Task[%d/%d] Time %.3fs Tile_size %d, Sparsity %d, Platform %s, ExecutionTime %.3f, l2NormRatio %.3f'\
-                       %((time.time()-start_time), search_task_id, total_search_tasks, tile_size, sparsity, target_name, execution_time, l2_norm_ratio))
-
+                       %(search_task_id, total_search_tasks, time.time() -
+                           start_time, tile_size, sparsity, target_name, execution_time, l2_norm_ratio))
+            search_task_id += 1
+            
             if(obj<best_obj):
                 best_obj = obj
                 best_tile_size = tile_size
@@ -82,7 +84,7 @@ def grid_search(weight, input, pruneType):
     M, K, N = input.shape[0], input.shape[1], weight.shape[1]
 
     search_space = {"tile_size":[2, 4, 8, 16, 32, 64, 128, 256, 512],\
-                    'sparsity' : [i for i in range(50, 100, 2)]}
+                    'sparsity' : [i for i in range(50, 100, 5)]}
 
     dtype = 'float16' if weight.dtype==np.float16 else 'float32'
     # Now only tw-1-dim is inplementted

@@ -1,0 +1,17 @@
+Settings: grid_tw1_1024_1024_1024_float32_gpu
+Search Task[1/90] Time 0.157s Tile_size 2, Sparsity 50, Platform gpu, ExecutionTime 0.672, l2NormRatio 1.146
+Search Task[1/90] Time 2523.146s Tile_size 2, Sparsity 55, Platform gpu, ExecutionTime 0.469, l2NormRatio 1.186
+Search Task[1/90] Time 2662.343s Tile_size 2, Sparsity 60, Platform gpu, ExecutionTime 0.463, l2NormRatio 1.235
+Search Task[1/90] Time 3166.235s Tile_size 2, Sparsity 65, Platform gpu, ExecutionTime 0.532, l2NormRatio 1.295
+Search Task[1/90] Time 2710.824s Tile_size 2, Sparsity 70, Platform gpu, ExecutionTime 0.551, l2NormRatio 1.371
+Search Task[1/90] Time 3600.562s Tile_size 2, Sparsity 75, Platform gpu, ExecutionTime 0.534, l2NormRatio 1.470
+Search Task[1/90] Time 3414.496s Tile_size 2, Sparsity 80, Platform gpu, ExecutionTime 0.616, l2NormRatio 1.604
+Search Task[1/90] Time 3415.603s Tile_size 2, Sparsity 85, Platform gpu, ExecutionTime 0.588, l2NormRatio 1.799
+Search Task[1/90] Time 2747.394s Tile_size 2, Sparsity 90, Platform gpu, ExecutionTime 0.657, l2NormRatio 2.128
+Search Task[1/90] Time 3545.896s Tile_size 2, Sparsity 95, Platform gpu, ExecutionTime 0.676, l2NormRatio 2.876
+Search Task[1/90] Time 3172.797s Tile_size 4, Sparsity 50, Platform gpu, ExecutionTime 0.239, l2NormRatio 1.212
+Search Task[1/90] Time 2645.239s Tile_size 4, Sparsity 55, Platform gpu, ExecutionTime 0.300, l2NormRatio 1.259
+Search Task[1/90] Time 2755.021s Tile_size 4, Sparsity 60, Platform gpu, ExecutionTime 0.273, l2NormRatio 1.316
+Search Task[1/90] Time 3286.123s Tile_size 4, Sparsity 65, Platform gpu, ExecutionTime 0.309, l2NormRatio 1.385
+Search Task[1/90] Time 2820.595s Tile_size 4, Sparsity 70, Platform gpu, ExecutionTime 0.342, l2NormRatio 1.472
+Search Task[1/90] Time 3217.893s Tile_size 4, Sparsity 75, Platform gpu, ExecutionTime 0.322, l2NormRatio 1.584

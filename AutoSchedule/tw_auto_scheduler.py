@@ -60,7 +60,7 @@ def get_execution_time(sparsity: int, tile_size: int, M, N, K, N_pruned_global, 
     if execution_time != None:
         return execution_time
 
-    K_pruned_max = math.floor(sparsity/100 * K)
+    K_pruned_max = math.floor((100-sparsity)/100 * K)
     block_num = (N_pruned_global + tile_size - 1)//tile_size
     N_ori_per_block = N // block_num
         

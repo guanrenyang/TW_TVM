@@ -9,7 +9,7 @@ from .tir_sparse_runner import sparse_fixed_runner
 from tvm.meta_schedule.runner.local_runner import LocalRunner
 import os
 root_dir = "/home/ryguan/TileSparsity_TVM/AutoSchedule/Outputs/MetaScheduler/"
-is_tune = True
+is_tune = False
 num_trails = 1000
 
 def insert_row_to_C_kernel_te(M, N, tile_size, block_num, dtype='float32'):
