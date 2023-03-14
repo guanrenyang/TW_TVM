@@ -5,8 +5,6 @@ import math, os, json, time
 
 cublas_execution_time = 0.22
 
-np.random.seed(42)
-
 root_dir = '/home/ryguan/TileSparsity_TVM/Outputs/'
 if not os.path.exists(root_dir):
     os.mkdir(root_dir)
@@ -84,8 +82,8 @@ def grid_search(weight, input, pruneType):
     M, K, N = input.shape[0], input.shape[1], weight.shape[1]
 
     search_space = {"tile_size":[2, 4, 8, 16, 32, 64, 128, 256, 512],\
-                    'sparsity' : [i for i in range(50, 100, 5)]}
-
+                    # 'sparsity' : [i for i in range(50, 100, 5)]}
+                    'sparsity' : [60]}
     dtype = 'float16' if weight.dtype==np.float16 else 'float32'
     # Now only tw-1-dim is inplementted
     if pruneType=='tw1':
